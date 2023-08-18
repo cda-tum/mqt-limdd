@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+  MAKEFLAGS: "-j2"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  codestyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: DoozyX/clang-format-lint-action@v0.14
+        with:
+          source: 'apps include jkq mqt src test'
+          extensions: 'h,hpp,c,cpp'
+          clangFormatVersion: 12
+
+  build-ubuntu:
+    name: Build and Test on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBINDINGS=ON -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON
+      - name: Build
+        run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
+      - name: Test
+        working-directory: ${{github.workspace}}/build/test
+        run: ctest -C $BUILD_TYPE --output-on-failure
+
+  build-macos:
+    name: Build and Test on MacOS
+    needs: [ build-ubuntu, codestyle ]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON
+      - name: Build
+        run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
+      - name: Test
+        working-directory: ${{github.workspace}}/build/test
+        shell: bash
+        run: ctest -C $BUILD_TYPE --output-on-failure
+
+  build-windows:
+    name: Build and Test on Windows
+    needs: [ build-ubuntu, codestyle ]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Configure CMake
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -T "ClangCl"
+      - name: Build
+        run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
+      - name: Test
+        working-directory: ${{github.workspace}}/build/test
+        run: cd $BUILD_TYPE && ./ddsim_test
+
+
+  coverage:
+    name: Coverage
+    needs: [ build-ubuntu, codestyle ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=1 -DBUILD_DDSIM_TESTS=ON  -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -DBINDINGS=ON
+      - name: Build
+        run: cmake --build "${{github.workspace}}/build" --config Debug --target ddsim_test
+      - name: Test
+        working-directory: ${{github.workspace}}/build/test
+        run: ctest -C Debug --output-on-failure
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token:            ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          gcov:             true
+          gcov_ignore:      "extern/**/*"

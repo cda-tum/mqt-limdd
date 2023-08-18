@@ -1,0 +1,628 @@
+====    TODO
+
+Log 30/12/2022
+I profiled the code. There is a clear bottleneck in the code: the coset intersection routine.
+In order of decreasing time, the time is spent in:
+   - coset intersection (~100%)
+   - construct stabilizers (70%)
+   - group intersect (50%)
+   - gaussian elimination (20%)
+   - recover phase (20%)
+   - gram schmidt (2%)
+The numbers add up to more than 100% because some are a part of the others. The numbers are not entirely accurate, because we use clock().
+It is clear that the coset intersection routine takes a lot of time. Is this because it's slow, or because it's called too often?
+We can discard some hypotheses about why the performance is worse than expected:
+Good news: we get the expected number of calls to MakeDDNode, namely, about 1 per qubit per gate, and this is a constant.
+   For QMDD, this number grows as the size of the circuit grows. This is great, because is means the Clifford-specialized algorithms indeed reduce the number of new nodes.
+   That is what they were intended to do, of course.
+Good news: the number of calls to makeDDNode() is the same as the number of calls to normalizeLIMDD(). This is expected.
+Good news: the size of the QMDD grows exponentially with the number of qubits, as expected.
+
+Log 31/12/2022
+I implemented an optimization and the time got 15% better.
+   I added a guard so that, in in constructStabilizerGeneratorSet, if X and Z stabilizers were found, then we don't look for Y stabilizers
+I implemented version 1.2.1 (an optimization so that gaussian elimination is performed fewer times), the implementation is 20% faster in total
+   The coset intersection routine is now called fewer times. I don't understand why that is.
+Log 01/01/2023
+I implemented version 1.2.2. The implementation is 5% faster than the previous one.
+   The gains are that intersectGroups is called 13% fewer times. (independent of #qubits and #gates)
+Log 02/01/2023
+The number of calls to intersectGroups is not consistent between different runs of the same Clifford circuit. This is unexpected.
+  I don't understand why this is. There seems to be a random component: different runs of a limdd on the same circuit gives different numbers of calls sometimes, and not in a consistent pattern.
+  I tested this by instantiating two limdds, and running the two LIMDDs in parallel on the shorTest circuit; then I added an assertion that the number of calls to groupIntersect must be the same in both DDs.
+  Sometimes this fails after 63 gates, sometimes after 37, or 75, sometimes after 170.
+I implemented version 1.2.5. This version is 4% faster than version 1.2.3, and 40% faster (on average, on circuits up to 33 qubits) than a much earlier version
+Log 03/01/2023
+Today ,I want to implement:
+   - put the memoization data for cosetIntersection in the Package, so that it is computed once in total per node
+      GH_Id_CEF, GintersectH
+   - in constructStabilizerGeneratorSetPauli, check whether rhoSquared==-1, and if so, perform a trick
+   - in constructStabilizerGeneratorSetPauli, reserve two slots in `stabgenset`, to make room for the two (potential) newly found stabilizers
+   - in intersectGroups{Pauli,ModuloPhase}, refactor to avoid the use of std::vector
+
+-- coding, functionality
+
+- find out why optimization 1.2.4 doesn't always reduce the number of calls to intersectGroups
+   + add a flag, lazyIntersectMemoization, which toggles this lazy memoization of intersectGroupsModuloPhaseValue()
+   + make getCosetInterectionElementPauli3, which allows lazy memoization
+   + in tests, run LIMDD both with and without lazy memoization. Assert that the lazy memoization never has more calls than the greedy memoization technique
+- optimize Pauli code
+   + in getCosetIntersectionElementPauli
+      - refactor so that no std::vector is made; instead, keep one (or two?) elements in local stack storage, found in the first loop
+      + refactor so that Gaussian elimination is performed only once; currently, this is done twice: first in getCosetIntersectionElementModuloPhase, and second in intersectGroupsModuloPhase.
+        it seems like some redundant work can be expediated
+         + make a new function, getCosetIntersectionElementPauli2(), which takes as input also a const vec<LimBitset<N, 2N>>& GH_Id, which is a gaussian-eliminated matrix of G and H
+         + same for getCosetIntersectionElementModuloPhase2()
+      + in constructStabilizerGroup, check which calls to getCosetIntersectionElementPauli() use the same data
+      - allocate the data using a static std::array<T, 2*NUM_QUBITS>
+   + in getIsomorphismPauli
+      + refactor the calls to getCosetIntersectionElementPauli so that GH_Id is computed only once
+        this should reduce the calls to gaussian elimination from getCosetIntersectionElementPauli inside getIsomorphismPauli, by a factor of 8, at most
+   + on paper, work out whether a node can have stabilizers that start with X, Y and Z. Oh, of course this can happen, simply if X and Z are stabilizers. But then we don't need to check for Y, right?
+      + in constructStabilizerGeneratorSet, if X and Z stabilizers were found, then don't look for Y stabilizers
+   - put the memoization data for cosetIntersection in the Package, so that it is computed once in total per node
+      GH_Id_CEF, GintersectH
+   - in constructStabilizerGeneratorSetPauli, check whether rhoSquared==-1, and if so, perform a trick
+   - in constructStabilizerGeneratorSetPauli, reserve two slots in `stabgenset`, to make room for the two (potential) newly found stabilizers
+   - in intersectGroups{Pauli,ModuloPhase}, refactor to avoid the use of std::vector
+   - make a new function, getCosetIntersectionElementAndPhase(G, H, a), which finds all lambda such that G intersect lambda aH is non-empty. Is lambda unique?
+      the idea is that we can call this function only once, instead of three times, in constructStabilizerGeneratorSet, and perhaps in getIsomorphismPauli
+      (requires a lot of work)
+- put the profiling code behind smart prepreocessing guards
++ implement function which counts the number of nodes
+    incref for nodes increases the refcount, so that active nodes can be counted
+- fix the bug found by hard circuit_5, _7, _11, _12, _13, _14, _15, _16, _17, _18
+- why is add2() called so infrequently? e.g. in generatedCircuit_9, multiply2() is called 4642 times; add2() is called 4 times. What gives??
++ make or find a set of large Clifford circuits, 3..100 qubits
+- implement general-purpose smart caching
+   + std::vector<Qubit> Package::selectActivePart(matrix_DD)
+      ? sorted ascending
+   + flag in Package whether you want this
+   + generate random circuits with controlled-controlled gates, T-gates
+   + implement Tim's dirty trick
+   - implement the feature: when looking up in computeTable, when getting canonical lim, change all non-active qubits to Identity; then look up
+      - implement conjugateDDWithLim(matrix, LimEntry<>)
+      - delete all Lim operators that the vector says to avoid
+      - guarded by flags
+   - perform getActiveQubits() only once per matrix in multiply2(); pass it as a parameter 'const std::vector<Qubit>& activeQubits = {}'
+   - double-check: in getCliffordCaching, do we get as many cache hits as we expect?
+   + time whether we're any faster anyway
+      + profile: where is most time spent?
+         + multiply, add, gaussian elimination, group intersection, makenode, normalize(), normalizeQMDD(), clifford post-processing
+         + output multiply, add, nodecount to file
+         + #calls to coset intersection, normalize(), normalizeLIMDD()
+      + setup infrastructure so that new changes can be rapidly A/B tested
+         + output times and other statistics to csv file
+      + output the number of nodes in a diagram
+      - histogram: multiply2 / add2 is called most often on nodes of how many qubits?
++ rewrite the caching so that the weight of the edge is Complex::one, instead of y.w
++ refactor applyPhaseGate so that it has two input parameters
+- refactor the apply() subroutines so they take nodes of matrices instead of edges
+- stop multiplying by weight of matrix x in postprocessing
+   - refactor processedCachedEdge() so matrix x is not an input
+- write documentation for normalize() function, especially, what are the expected inputs and outputs wrt are weights in the cache or in the table?
+- implement bool complexCache::isInCache(CTEntry* e)
+- condense code in
+   + apply Hadamard
+   + apply controlled Pauli gate
+   - isPauliGate
+   - is controlled Pauli gate
+   + apply projection
++ statistics on calls to applyClifford gates subroutines
++ refactor isControlledPauliGate to take a Control item, instead of a Qubit item
+   + in isControlledPauliGate
+   + in applyControlledPauliGate
++ negative controls
+   + recognize negative controls
+   + implement negative controls in applyControlledPauli
+      + X
+      + Y
++ refactor tuple<Control, Qubit, pauli_op> to new struct CliffordGate
+  + in isControlledPauliGate
+  + in isHadamardGate
+  + in isPauliGate
++ implement applyPauliGate
+LOW PRIORITY:
+    - recognize general phase gate
+    - recognize controlled-controlled Pauli gates
+    - apply controlled controlled Pauli gates
+
+CHANGELOG AND VERSIONS for locality-aware caching
+1.0: implemented dirty trick suggested by Tim, i.e., get the active qubits of a matrix, and use only those qubits for the LIM when caching
+1.1: skip the redundant search for a Y-stabilizer when already an X-stabilizer and a Z-stabilizer were found
+1.2.1: refactor construct StabilizerGeneratorSet, so that in calls to cosetIntersection, we avoid redundant calls to gaussian elimination
+1.2.2: more redundant calls are avoided. specifically, in constructStabilizerGeneratorSet, the group intersection is computed only once, rather than potentially in every invocation of getCosetIntersectionElementPauli2()
+1.2.3: more redundant calls are avoided. specifically, in constructStabilizerGeneratorSet, if an X or a Z element was found, then we no longer search for a Y-element
+1.2.4: only call intersectGroupsModuloPhase when it's needed, in constructStabilizerGeneratorSet
+1.2.5: refactor getIsomorphismPauli to avoid redundant calls, and use memoization
+1.2.6: slightly reduce number of calls to getCosetIntersectionElementPauli in constructStabilizerGeneratorSet
+1.2.7: the memoization in getIsomorphism, and constructStabilizerGeneratorSet, is now coupled together, cooperating
+1.2.8 (planned): avoid the use of std::vector in getCosetIntersectionPauli2
+   - caution: test this very heavily!!
+1.2.9 (planned): avoid the use of std::vector in intersectGroups
+1.2.10 (planned): use static data structures to store the intermediate computations of constructStabilizerGeneratorSet
+1.3 (planned): allow simultaneous use of Clifford-specialized caching AND locality-aware caching
+1.4 (planned): find the active qubits only once per gate. do this in the multiply() routine, then pass it as a parameter to multiply2(..., const std::vector<Qubit>& activeQubits)
+1.5 (planned): use the Identity flag to skip many computations (requires a bugfix, but no new material)
+   - put this behind a flag guard
+1.6 (planned): process minor optimizations to specialized clifford operations
+
+in makeDDNode, delete the old low and high LIMs of the edge
+
+- Optimize `GramSchmidt()` from $O(n^3)$ to O(n^2)$ by assuming that the group `G` is in column echelon form
+- (low priority) in `getIsomorphismPauli()` in Case 3.1, can we simply set 'X' in the isomorphism, instead of multiplying by an isomorphism?
+- (low priority) in `intersectGroupsPauli()`, prevent the use of `vector oppositePhaseGenerators` by writing more space-efficient code:
+   add the LimEntry objects immediately, instead of storing them for later use.
+
+-- TESTS
+
+Write many tests for
+    GaussianElimination,
+        when -I is generated
+    getVector
+write test for recoverPhase(G, a)
+write test for recoverElement
+
+-- REFACTORING (low priority)
+
+refactor LimEntry<>::setOperator so that one function is called,
+    instead of two different setOperators
+    note that pauli_op is already defined in terms of 'I' and 'X' and so on, so it should already translate correctly
+
+Refactor 'limVector' into 'StabilizerGroup'
+refactor StabilizerGroup into its own class
+    Methods:
+    GramSchmidt
+    IsSorted
+    Sort()
+    getKernel
+    appendIdentity
+    equals
+    concatenate
+    deepcopy
+    gaussianElimination
+    pruneZeroColumns
+    toColumnEchelonForm
+    addLim
+    	don't add duplicate LIMs
+
+-- LOW PRIORITY
+
+make Hamming weight circuits
+
+====    DONE
+
+Documentation:
+    HighLabelpauli
+    getStabilizerGeneratorSet
+
+refactor CVec utilities into a separate file
+    print
+    is zero
+    add
+    multiply(CMat, CVec)
+put sanity checks in a separate file
+
+In getKernelZ, getKernelPauli,
+    Refactor LimBitset* into LimBitset, i.e., make them local, temporary variables,
+    to reduce memory management problems
+
+test for isTower
+
+fuzz more circuits:
+nqubits = 2 ... 5
+    ngates = 5, 10, 15, 20, 25
+        make 300 clifford circuits
+        make 300 non-Clifford circuits
+
+make tests for intersectGroupsPauli
+
+in new file PauliUtilities.hpp,
+    put the easy Pauli algebra stuff, like printing groups,
+    copying bitset segments, stuff with phases
+
+in normalizeLIMDDPauli:
+    (done) via lots of LimEntry<>::multiply calls
+    - root node label should be a local variable; then it is looked up.
+    (done) high label is newly allocated; but is not necessary
+    - use leftMultiplyBy instead of LimEntry<>::multiply
+    many complex values are not returned to the cache
+in getIsomorphismPauli, :
+    - return a LimEntry<> by value
+    - use a separate bit to indicate whether the isomorphism was found?
+in getHighlabel:
+    (done) return a LimEntry<> by value
+in constructStabilizerGeneratorSetPauli:
+    ?
+in makeDDNode:
+    (done) put the LIMs of the stabilizer generator group in the LimTable
+    delete the LIMs
+    construct the stabilizer group ONLY if it was not previously computed
+getCosetIntersectionElementPauli
+    - LimEntry<>::multiply; solution is to use local LIMs
+    - return a LimEntry object by value
+    - use a separate bit to indicate whether the isomorphism was found?
+getCosetIntersectionModuloPhase:
+    return a LimEntry<> by value
+groupConcatenate
+    return std::vector<LimEntry<> > instead of vector<LimEntry<>*>
+appendIdentityMatrixBitset:
+    return vector<LimBitset> instead of vector<LimBitset*>
+getKernelModuloPhase:
+    do everything by value
+getProductofElements:
+    return entry by value
+GaussianElimination:
+    do multiplyBy instead of Limentry<>::multiply
+in LimWeight
+    make the LimEntry<> object a data field instead of a pointer
+GramSchmidt
+    - return by value
+
+incorporate X,Y cases into getIsomorphism's case u==v, see branch limdd-pauli-better-isomorphisms
+
+ask Thomas, Stefan how to decrease refcount to a node, so that the previous node is deleted, in the knife case of normalizeLIMDDPauli().
+
+add Pauli-LIMDD functionality to
+    ComputeTable of Add
+    ComputeTable of multiplyMatrix
+    make inventory of places where LIMDD functionality needs to be added in order to support simulation
+
+bool isTower()
+
+Remove memory leaks
+    make inventory of memory leaks
+All 'simpleCircuit' tests pass
+
+Talk to Thomas and Jurgen about:
+    - large groups, very large groups
+Talk to Stefan about:
+    - better variable reordering strategies
+
+incorporate weights into the getIsomorphismPauli procedure
+    Use a cached weight in getHighLabelPauli
+    in normalizeLIMDDPauli, allocate a cached weight, weightInv that highLabel can use,
+        so that highLabelPauli doesn't need to receive the whole complexTable
+    do not assume that the low weight is 1 
+    cover the case when u.high = 1 / v.high, in the spoon case when u.p == v.p
+        work out on paper first
+
+in normalizeLIMDD, in the high knife case, do we remove the high label, if it is present?
+    it seemes counterintuitive to do, but we should set the label to I
+
+- make 10 stabilizer circuits
+- make 10 non-stabilizer circuits, with T gates
+
+all tests pass under Pauli group
+
+add <Z>-LIMDD functionality to
+    add
+    multiplyMatrix
+    make inventory of places where LIMDD functionality needs to be added in order to support simulation
+
+refactor getIsomorphismPauli so that it returns a LIM with a weight
+
+refactor highLabelPauli so that it returns a LimWeight object, with the new weight and new LIM
+    (maybe not, since the returnToCache() obligations on normalizeLIMDD() would be more complicated
+
+Is the 's' and 'x' parameters useful?
+    write this algorithm on paper, or find it in notebook
+    If the 's' or 'x' is not used, then remove it from the highlabel parameters
+
+make very detailed writeup of getIsomorphismPauli in pdf, explaining all the reasoning.
+    This is also important for other people, and myself, to understand the algorithms.
+
+implement 'follow' and 'unfollow' for the Pauli group
+    amounts to implementing X and Y
+
+in normalizeLIMDDPauli, in the knife cases, make sure the two edges point to the same node.
+
+make functionality in Package which allows me to execute a circuit
+refactor the simpleCliffordCircuit tests to first execute a circuit as qmdd, then as limdd; then compare the CVec of the final states
+
+Log
+    all debugging statements in the limdd go to Log instead of to std::cout
+    ability to turn the log on and off
+
+make a new reduction rule for weights on the high edge.
+	communicate with Linz
+
+// TODO is the assertion that the low LIMs are Identity true in all calls from normalizeLIMDD?
+    Yes, this assertion holds when getIsomorphism is called
+
+checkout testSimpleCliffordCircuit_1,2,3 in other branches to see if I've merged correctly
+
+Take steps to fix the segmentation faults, invalid free errors
+    make a vNode destructor, which does nothing.
+    repair memory leaks in all the methods that need it, in PauliAlgebra.hpp
+    (Sebastiaan fixed these)
+    
+The following tests fail:
+[  FAILED  ] LimTest.simpleCliffordCircuit
+    Because simulation is not yet supported; only representation is supported
+[  FAILED  ] DDPackageTest.VectorSerializationTest
+    Because serialize() and deserialize() do not support LIMDDs yet
+[  FAILED  ] DDPackageTest.BasicNumericStabilityTest
+    Because it stores the state |-> = |0> - |1>.
+    It assumes the high edge weight will be -sqrt 2.
+    However, with the new LIMDD functionality, this is stored as Z|+>  =  Z(|0> + |1>),
+    so the weight is +sqrt 2 instead of -sqrt 2.
+
+Add a parameter to the dd stating the group, 'Z', 'Pauli', 'QMDD' / 'trivial'
+    refactor the group to enum LIMDD_group type
+
+
+
+Ask Linz to help design the division and multiplications that are needed
+
+fix test createnode9
+    error has to do with getbit. what is going wrong?
+fix test createnode11
+
+Update getVectorLIMDD to reflect the X, and Y gates
+write isValidIsomorphismBruteForce(edge, edge, lim), which outputs 'true' iff the given lim is an isomorphism between edge and edge
+
+pass all PauliIsomorphism tests
+
+Make a class "LimWeight" which contains (i) LimEntry; (ii) Complex
+Output of getIsomorphismPauli is a struct called "LimWeight" with fields LimEntry, Complex
+
+make an inventory of functionality that needs to be added to support the Pauli group
+
+highLabelPauli
+    sketch this algorithm on paper
+
+Complex::lexSmallerThan
+
+refactor 'phases' into 'phase_t'
+
+make a list of usages of LimBitset
+Here is the list:
+    - getKernelModuloPhase
+    - NOT in getKernel, but should we use it there? Does any procedure use that function? Here is a list:
+    todo: in intersectGroups, use LimBitset instead of LimEntry
+        should we do this?
+
+remove GramSchmidt algorithms that are not used
+    refactor usage of GramSchmidt(Group, LimBitset) into GramSchmidt(Group, LimEntry, std::bitset)
+    result: all three are used. But one of them we can refactor:
+    should we refactor GramSchmidt(G, x) { return GramSchmidt(G,x, std::bitset); } ?
+GramSchmidt is used here:
+    getCosetIntersectionElementPauli uses GramSchmidt(Group, LimBitset*)
+        result is used as a local variable
+        SOLVED has no memory leaks
+    getCosetIntersectionElementPauli uses GramSchmidt(Group, LimEntry*, bitset)
+        result is not used; only used to obtain the decomposition
+        TODO: solve memory leak by using local variable.
+        Don't return anything.
+
+
+in PauliAlgebra.hpp: intersectGroupsModuloPhase:
+    refactor loop body to getProductOfElements
+
+in PauliAlgebra.hpp: GramSchmidt(LimBitset)
+    refactor local variable y to stack instead of heap
+    
+in Package.hpp: normalizeLIMDD
+    double-check whether the case when getIsomorphismZ returns the nullptr, is handled correctly
+
+getVector
+
+getIsomorphismZ when amplitudes have opposite signs, +/- 1
+	when amplitude sign is hidden in the phase ( should not happen in reduced diagrams?)
+
+refactor groupsIntersectZ to use getKernelBitset instead of getKernel
+
+write getKernelZ to use Bitset instead of LimEntry
+
+refactor GaussianElimination(LimBitset) to handle the phase appropriately, i.e.,
+	if there's -I, then use that to cancel out all the other LIMs with a phase
+
+In HighLabel, take the weight on the high edge as an input, and produce a new weight on the high edge as an output. (this also happens in the algorithm in the paper)
+	Use the following lexmin order on complex numbers, a+bi, c+di:
+		if b>d return a+bi
+		if d>b return c+di
+		if a>c return a+bi
+		return c+di
+	Sketch the HighLabel algorithm
+	Implement the HighLabel algorithm
+		
+merge the branch of LIMs-in-reverse-order
+
+in getIsomorphismZ:
+	do the case when the amplitudes have opposite signs
+
+implement toColumnEchelonFormModuloPhase
+
+implement Coset Intersection Element Pauli
+
+rewrite toColumnEchelonForm so that it keeps track of a 'linear combination matrix', using the LimBitset data structure
+
+Add findAutomorphismGroup to makeDDNode
+
+Write tests for
+	ColumnEchelonForm
+		1. Test G={ ZI, IZ, ZI, IZ }
+    makeDDNode(edge 1, edge 2)
+	automorphism group construction
+	GramSchmidt
+	coset intersection Pauli
+		many tests exist in Python implementation
+	multiplication, paying attention to phase
+	making Pauli strings with phases
+	getPhase
+    Complex::multiplyByMinusOne()
+	tests where nodes are normalized
+		first successful test (not ending in segfault)
+	    first successful test with a normalized node and a non-trivial edge label
+    intersection tests; import from Python
+
+
+
+multiplication
+
+constructStabilizerGeneratorSetZ
+
+coset intersection
+    implement with less dynamic reallocation
+
+highlabelZ
+
+Write and pass the 8 tests (4 remaining)
+
+update the paulitostring test
+
+test the phase in the LimEntry constructor
+
+update the bitsetfromstring test
+
+getIsomorphismZ
+
+in test CreateNode1:
+	Find out why getIsomorphismZ doesn't find the isomorphism it's supposed to find
+
+in a new branch, make LIMs the most significant bit
+
+sort stabilizer groups descending instead of ascending
+
+
+
+
+====    TODO new functionality to support Pauli    ====
+
+** Tests **
+- make 10 test cases for highLabelPauli
+-     on paper
+- make 10 test cases for getIsomorphismPauli
+-     on paper
+- make a test case for nodes which trigger Step 5 in getIsomorphismZ, the 'Z'-operator clause
+- make a test case which triggers Step 5 in getIsomorphismPauli
+- make a test case which triggers Case 3.1 in getIsomorphismPauli
+- make a test case which triggers case 3.1, and which is sensitive to the weight
+- make a test which triggers case x=1 in normalizeLIMDD
+
+in normalizeLIMDD:
+    + swap the two edges if necessary
+    + find a total order on nodes... their ID?
+    + use bool x in the getLabels function
+    - in case x=1, multiply weight by lambda
+
+getIsomorphismPauli
+    + modify getIsomorphismZ by checking whether maybe u and v need to be exchanged;
+    + sketch this algorithm on paper
+    + it looks like we have all the necessary elements, like intersect Pauli cosets
+    - multiply with 1/w
+
+getStabilizerGeneratorSetPauli
+    + work out on paper
+    + implement
+    + call from normalize
+
+GaussianEliminationPauli
+    hypothesis: already works.
+    - Write tests to check if we're left-multiplying or right-multiplying and whether that matters (given that our groups are abelian)
+
+getRootLabel
+    Hypothesis: already works for Pauli
+        since it just returns the lexmin of a coset, which is what we want
+
+toColumnEchelonFormPauli
+    Hypothesis: works after we refactor GaussianEliminationPauli (if necessary)
+
+GramSchmidt
+    Hypothesis: already works.
+    - make some tests to check that idea
+
+getKernelPauli
+    Hypothesis: works after we refactor GaussianEliminationPauli (if necessary)
+
+getKernelModuloPhase
+    hypothesis: it already works, because it works if GaussianEliminationModuloPhase works
+
+intersectGroupsPauli
+    Write 10 tests to test this behaviour
+    Refactor this to ask for getKernelPauli
+    Hypothesis: it works when getKernelPauli works
+    Double-check whether getProductOfElements should do left or right multiplication
+
+Ask whether the number of qubits in the diagram 'nq' is different from the number of qubits for LIMs
+
+====    TODO for which I need JKU's help
+
+prepare Linz meeting
+    new edge weight normalization rules; make a picture illustrating why this is
+    make list of places in code where LimTable should be added
+
+PauliAlgebra.hpp: implement several algorithms without a memory leak:
+	- GramSchmidt
+		Can be implemented with almost no reallocation of memory
+		e.g., the 'y' object can be a local variable, instead of a pointer
+	- GaussianElimination(LimEntry)
+	   the following line may introduce a memory leak, by allocating a new LimEntry without deallocating the previous content of G[reduceColId]
+        G[reduceColId] = LimEntry<NUM_QUBITS>::multiply(G[reduceColId], G[reducingColId]);
+	- GaussianEliminationModuloPhase
+	   the same as above
+	- GaussianElimination(LimBitset)
+	   the same as above
+	- almost any place where two LIMs are multiplied
+	
+PauliAlgebra.hpp: highLabelZWeight
+	Here a weight is multiplied by -1, in the function
+            weight.multiplyByMinusOne();
+    Can this have unintended consequences if the CTEntry is also used by another weight elsewhere in the diagram?
+    If so, we should refactor this line to have no unintended consequences
+
+PauliAlgebra.hpp: constuctStabilizerGeneratorSetZ
+	deallocate 'm' and 'minus'
+
+Package.hpp: normalizeLIMDD()
+	1. two LIMs are multiplied in the following line in Step 1,
+            r.p->e[1].l = LimEntry<>::multiply(lowLim, higLim);
+	   This may introduce a memory leak; ideally, these LIMs are put in the table
+       The same question for LimEntry<>::multiply in Step 5 and Step 7
+    2. in Step 3, the procedure highLabelZ may change the weight on the high edge, by multiplying it by -1.
+       Is this a violation of the normalization rules?
+       --> see picture TODO
+    3. In Step 6, the root edge weight is multiplied by -1.
+       Can this have unintended consequences if the same weights are used elsewhere in the diagram?
+
+PauliAlgebra.hpp: pruneZeroColumns
+    This procedure removes LimEntry* pointers from a vector, without properly deallocating the LimEntry objects
+    this procedure should reduce the refcount of the LimEntry objects it removes from G
+
+PauliAlgebra.hpp: appendIdentityMatrixBitset
+    allocates new LimBitset, but these objects are never deallocated.
+    Solution: deallocate immediately after use, since they are temporary objects used locally in a function
+
+PauliAlgebra.hpp: getKernelZ
+    This procedure allocates LimBitset objects in the G_Id variable,
+    but these objects are not deallocated.
+
+in PauliAlgebra.hpp: getCosetIntersectionElementPauli
+    The following local variables are allocated on the heap but not deallocated, causing memory leaks:
+        GH
+        GH_Id
+        a_H
+        a_prime
+        k_G
+        k_H
+
+PauliAlgebra.hpp: constructStabilizerGeneratorSetZ
+    put LimEntry pointers 'idZ' and 'minusIdZ' into the LimTable?
+    deallocate 'minus' and 'm'
+
+PauliAlgebra.hpp: isTimesMinusOne
+    Should this method be moved to Complex.hpp?
+
+PauliAlgebra.hpp: getIsomorphismZ
+    'isoHigh' is allocated, but not deallocated.
+    Put this object in the LimTable, or deallocate appropriately in some other way, e.g.,
+    refactor into a local variable (on the stack)
+
+PauliAlgebra.hpp: highLabelZ
+    GH is not deallocated properly
+
+in LimTable.hpp: LimEntry::multiply
+    In the places that call this function, make sure that the LimEntry is put in the LimTable,
+    if appropriate, and otherwise is deallocated
+    make an inventory of places where this happens

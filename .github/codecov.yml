@@ -1,0 +1,23 @@
+ignore:
+  - "extern/**/*"
+  - "apps/*"
+  - "test/*.cpp"
+  - "mqt/**/*"
+  - "jkq/**/*"
+
+coverage:
+  range:     60..95
+  precision: 1
+  status:
+    project:
+      default:
+        threshold: 0.5%
+    patch:
+      default:
+        threshold: 1%
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: no
+      loop:        no

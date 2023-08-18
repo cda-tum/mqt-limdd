@@ -1,0 +1,23 @@
+.idea/
+cmake-build-*/
+/build*
+*.dot
+*.dot.svg
+todo.txt
+.cproject
+.project
+bell_matrix.dd
+bell_matrix_binary.dd
+bell_state.dd
+bell_state_binary.dd
+test-output.txt
+notes meeting 04-03-2022.txt
+test/createNode-test-illustrations.drawio
+*.svg
+*.aux
+*.log
+*.out
+*.synctex.gz
+pics/*
+
+test/generate-circuits/generateCliffordCircuit
