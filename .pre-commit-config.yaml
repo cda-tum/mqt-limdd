@@ -11,7 +11,7 @@ ci:
   autoupdate_commit_msg: "⬆️🪝 update pre-commit hooks"
   autofix_commit_msg: "🎨 pre-commit fixes"
 
-exclude: "cxxopts|taskflow|xz|json|pybind11|pybind11_json|googletest"
+exclude: "cxxopts|taskflow|zx|json|pybind11|pybind11_json|googletest"
 repos:
   # Standard hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
