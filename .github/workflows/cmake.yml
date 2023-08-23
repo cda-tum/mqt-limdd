@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
-        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300
+        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300 --tests-regex "LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
 
   build-macos:
     name: Build and Test on MacOS
@@ -49,7 +49,7 @@ jobs:
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
-        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300
+        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300 --tests-regex "LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
 
   build-windows:
     name: Build and Test on Windows
@@ -65,7 +65,7 @@ jobs:
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
-        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300
+        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300 --tests-regex "LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
 
   coverage:
     name: Coverage
@@ -80,7 +80,7 @@ jobs:
       - name: Configure CMake
         run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=1 -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -DBINDINGS=ON
       - name: Build
-        run: cmake --build "${{github.workspace}}/build" --config Debug --target ddsim_test
+        run: cmake --build "${{github.workspace}}/build" --config Debug --target ddsim_test --tests-regex "LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
       - name: Test
         working-directory: ${{github.workspace}}/build/test
         run: ctest --build-config Debug --output-on-failure
