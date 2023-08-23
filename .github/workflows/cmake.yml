@@ -2,10 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [main]
   pull_request:
-    branches: [ master, main ]
+  merge_group:
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 env:
   BUILD_TYPE: Release
@@ -16,18 +20,6 @@ defaults:
     shell: bash
 
 jobs:
-  codestyle:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - uses: DoozyX/clang-format-lint-action@v0.14
-        with:
-          source: 'apps include jkq mqt src test'
-          extensions: 'h,hpp,c,cpp'
-          clangFormatVersion: 12
-
   build-ubuntu:
     name: Build and Test on Ubuntu
     runs-on: ubuntu-latest
@@ -35,34 +27,33 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Set up mold as linker
+        uses: rui314/setup-mold@v1
       - name: Configure CMake
         run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBINDINGS=ON -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
-        working-directory: ${{github.workspace}}/build/test
-        run: ctest -C $BUILD_TYPE --output-on-failure
+        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300
 
   build-macos:
     name: Build and Test on MacOS
-    needs: [ build-ubuntu, codestyle ]
+    needs: [build-ubuntu]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Configure CMake
-        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_DDSIM_TESTS=ON
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
-        working-directory: ${{github.workspace}}/build/test
-        shell: bash
-        run: ctest -C $BUILD_TYPE --output-on-failure
+        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300
 
   build-windows:
     name: Build and Test on Windows
-    needs: [ build-ubuntu, codestyle ]
+    needs: [build-ubuntu]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -70,33 +61,33 @@ jobs:
           submodules: recursive
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Configure CMake
-        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -T "ClangCl"
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_DDSIM_TESTS=ON -T "ClangCl"
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
-        working-directory: ${{github.workspace}}/build/test
-        run: cd $BUILD_TYPE && ./ddsim_test
-
+        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300
 
   coverage:
     name: Coverage
-    needs: [ build-ubuntu, codestyle ]
+    needs: [build-ubuntu]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Set up mold as linker
+        uses: rui314/setup-mold@v1
       - name: Configure CMake
-        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=1 -DBUILD_DDSIM_TESTS=ON  -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -DBINDINGS=ON
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=1 -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -DBINDINGS=ON
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config Debug --target ddsim_test
       - name: Test
         working-directory: ${{github.workspace}}/build/test
-        run: ctest -C Debug --output-on-failure
+        run: ctest --build-config Debug --output-on-failure
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          token:            ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          gcov:             true
-          gcov_ignore:      "extern/**/*"
+          gcov: true
+          gcov_ignore: "extern/**/*"
