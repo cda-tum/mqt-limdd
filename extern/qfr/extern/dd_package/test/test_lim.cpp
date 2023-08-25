@@ -9,10 +9,10 @@
 using namespace dd::literals;
 
 std::ostream& operator<<(std::ostream& out, const dd::CVec& vec) {
-	for (unsigned int i=0; i<vec.size(); i++) {
-		out << vec[i] << ' ';
-	}
-	return out;
+    for (unsigned int i = 0; i < vec.size(); i++) {
+        out << vec[i] << ' ';
+    }
+    return out;
 }
 
 TEST(LimTest, SinglePauliOps) {
@@ -375,21 +375,20 @@ TEST(LimTest, getVectorLIMDD4) {
 
     // make edge ZI|1>|1>
     dd::LimEntry<>* lim = new dd::LimEntry<>("IZ");
-    auto e1 = dd->makeDDNode(1, std::array{e0, e0}, false, lim);
-    e1.p->e[0].w = dd::Complex::zero;
+    auto            e1  = dd->makeDDNode(1, std::array{e0, e0}, false, lim);
+    e1.p->e[0].w        = dd::Complex::zero;
     dd::export2Dot(e1, "getVectorLIMDD4-e1.dot", false, true, true, false, true, false);
-
 
     dd::Log::log << "The LIMDD e1 looks as follows:\n";
     dd::Log::log << "root label: " << dd::LimEntry<>::to_string(e1.l) << '\n';
     dd::Log::log << "root weight: " << e1.w << '\n';
     dd::Log::log << "root node children LIMs: " << dd::LimEntry<>::to_string(e1.p->e[0].l) << " " << dd::LimEntry<>::to_string(e1.p->e[1].l) << '\n';
     auto     vec = dd->getVector(e1);
-    dd::CVec expectedVec{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {-1.0,0.0}};
-//    expectedVec.push_back({0.0, 0.0});
-//    expectedVec.push_back({0.0, 0.0});
-//    expectedVec.push_back({0.0, 0.0});
-//    expectedVec.push_back({-1.0, 0.0});
+    dd::CVec expectedVec{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {-1.0, 0.0}};
+    //    expectedVec.push_back({0.0, 0.0});
+    //    expectedVec.push_back({0.0, 0.0});
+    //    expectedVec.push_back({0.0, 0.0});
+    //    expectedVec.push_back({-1.0, 0.0});
     std::cout << "[getVectorLIMDD4 test] expected vector: " << expectedVec << '\n';
     std::cout << "[getVectorLIMDD4 test] result   vector: " << vec << '\n';
 
@@ -406,7 +405,7 @@ TEST(LimTest, getVectorLIMDD5) {
     // make edge ZI|1>|1>
     dd::LimEntry<>* lim1 = new dd::LimEntry<>("IZ");
     auto            e1   = dd->makeDDNode(1, std::array{e0, e0}, false, lim1);
-    e1.p->e[0].w = dd::Complex::zero;
+    e1.p->e[0].w         = dd::Complex::zero;
 
     auto     vec = dd->getVector(e1);
     dd::CVec expectedVec;
@@ -427,7 +426,7 @@ TEST(LimTest, getVectorLIMDD6) {
     // make edge ZI|1>|0>
     dd::LimEntry<>* lim = new dd::LimEntry<>("IZ");
     auto            e1  = dd->makeDDNode(1, std::array{e0, e0}, false, lim);
-    e1.p->e[0].w = dd::Complex::zero;
+    e1.p->e[0].w        = dd::Complex::zero;
 
     auto     vec = dd->getVector(e1);
     dd::CVec expectedVec;
@@ -443,9 +442,9 @@ TEST(LimTest, getVectorLIMDD7) {
     auto dd = std::make_unique<dd::Package<>>(2);
 
     // make edge |+>
-    auto e0 = dd->makeDDNode(0, std::array{dd::vEdge::one, dd::vEdge::one}, false, nullptr);
+    auto e0      = dd->makeDDNode(0, std::array{dd::vEdge::one, dd::vEdge::one}, false, nullptr);
     auto e0_zero = e0;
-    e0_zero.w = dd::Complex::zero;
+    e0_zero.w    = dd::Complex::zero;
 
     // make edge ZI|1>|+>
     dd::LimEntry<>* lim = new dd::LimEntry<>("IZ");
@@ -458,8 +457,7 @@ TEST(LimTest, getVectorLIMDD7) {
     expectedVec.push_back({0.0, 0.0});
     expectedVec.push_back({-1.0, 0.0});
     expectedVec.push_back({-1.0, 0.0});
-    std::cout << "Expected vec: " << expectedVec <<
-    		   "\nActual   vec"   << vec << std::endl;
+    std::cout << "Expected vec: " << expectedVec << "\nActual   vec" << vec << std::endl;
 
     EXPECT_TRUE(dd->vectorsApproximatelyEqual(vec, expectedVec));
 }
@@ -474,7 +472,7 @@ TEST(LimTest, getVectorLIMDD8) {
     // make edge ZI|1>Z|+>
     dd::LimEntry<>* lim1 = new dd::LimEntry<>("IZ");
     std::cout << "[getVector8] lim1 = " << dd::LimEntry<>::to_string(lim1) << "\n";
-    auto e1 = dd->makeDDNode(1, std::array{e0, e0}, false, lim1);
+    auto e1      = dd->makeDDNode(1, std::array{e0, e0}, false, lim1);
     e1.p->e[0].w = dd::Complex::zero;
 
     auto     vec = dd->getVector(e1);
@@ -498,7 +496,7 @@ TEST(LimTest, getVectorLIMDD9) {
     // make edge ZI|0>|+>
     dd::LimEntry<>* lim = new dd::LimEntry<>("IZ");
     auto            e1  = dd->makeDDNode(1, std::array{e0, e0}, false, lim);
-    e1.p->e[1].w = dd::Complex::zero;
+    e1.p->e[1].w        = dd::Complex::zero;
 
     auto     vec = dd->getVector(e1);
     dd::CVec expectedVec;
@@ -574,7 +572,7 @@ TEST(LimTest, getVectorLIMDD12) {
     // make edge ZZ(|0>|+> + |1>Z|1>)
     dd::LimEntry<>* lim2 = new dd::LimEntry<>("ZZ");
     std::cout << "[getVectorLIMDD12 test] making 2-qubit state e2.\n";
-    auto            e2   = dd->makeDDNode(1, std::array{e0, e1}, false, lim2);
+    auto e2 = dd->makeDDNode(1, std::array{e0, e1}, false, lim2);
     dd::export2Dot(e2, "getVectorLIMDD12.dot", false, true, true, false, true, false);
 
     std::cout << "[getVectorLIMDD12 test] Root edge: " << e2;
@@ -585,10 +583,9 @@ TEST(LimTest, getVectorLIMDD12) {
     expectedVec.push_back({0.0, 0.0});
     expectedVec.push_back({-1.0, 0.0});
 
-    std::cout << "[getVectorLIMDD12 test] root edge is now " << e2  << "\n";
+    std::cout << "[getVectorLIMDD12 test] root edge is now " << e2 << "\n";
     std::cout << "[getVectorLIMDD12 test] actual vector:   " << vec << "\n";
     std::cout << "[getVectorLIMDD12 test] expected vector: " << expectedVec << "\n";
-
 
     EXPECT_TRUE(dd->vectorsApproximatelyEqual(vec, expectedVec));
 }
@@ -1802,12 +1799,12 @@ TEST(LimTest, CreateNode14) {
     // Expected: root label is IZ
     std::cout << "[CreateNode14 test] root label (II expected): " << *(e2.l) << "\n";
     // TODO why can't I print this weight?
-//    std::cout << "[CreateNode14 test] root weight: (-i expected):" << e2.w << "\n";
+    //    std::cout << "[CreateNode14 test] root weight: (-i expected):" << e2.w << "\n";
     dd::LimEntry<>* expectedRootLabel = new dd::LimEntry<>("II");
     EXPECT_TRUE(dd::LimEntry<>::Equal(e2.l, expectedRootLabel));
     // Expected: high label Identity
     std::cout << "[CreateNode14 test] high label  (I expected):  " << *(e2.p->e[1].l) << "\n";
-//    std::cout << "[CreateNode14 test] high weight (i expected): " << e2.p->e[1].w << "\n";
+    //    std::cout << "[CreateNode14 test] high weight (i expected): " << e2.p->e[1].w << "\n";
     EXPECT_TRUE(dd::LimEntry<>::isIdentityOperator(e2.p->e[1].l));
 }
 
@@ -1858,12 +1855,12 @@ TEST(LimTest, CreateNode16) {
 
     // Expected: root label is IZ
     std::cout << "[CreateNode16 test] root label (II expected): " << *(e2.l) << "\n";
-//    std::cout << "[CreateNode16 test] root weight: (-1 expected):" << e2.w << "\n"; // TODO print weight
+    //    std::cout << "[CreateNode16 test] root weight: (-1 expected):" << e2.w << "\n"; // TODO print weight
     dd::LimEntry<>* expectedRootLabel = new dd::LimEntry<>("II");
     EXPECT_TRUE(dd::LimEntry<>::Equal(e2.l, expectedRootLabel));
     // Expected: high label Identity
     std::cout << "[CreateNode16 test] high label  (I expected): " << *(e2.p->e[1].l) << "\n";
-//    std::cout << "[CreateNode16 test] high weight (i expected): " << e2.p->e[1].w << "\n"; // TODO print weight
+    //    std::cout << "[CreateNode16 test] high weight (i expected): " << e2.p->e[1].w << "\n"; // TODO print weight
     EXPECT_TRUE(dd::LimEntry<>::isIdentityOperator(e2.p->e[1].l));
 }
 
@@ -1914,12 +1911,12 @@ TEST(LimTest, CreateNode18) {
 
     // Expected: root label is IZ
     std::cout << "[CreateNode18 test] root label (IZ expected): " << *(e2.l) << "\n";
-//    std::cout << "[CreateNode18 test] root weight: (-1 expected):" << e2.w << "\n"; // TODO print weight
+    //    std::cout << "[CreateNode18 test] root weight: (-1 expected):" << e2.w << "\n"; // TODO print weight
     dd::LimEntry<>* expectedRootLabel = new dd::LimEntry<>("IZ");
     EXPECT_TRUE(dd::LimEntry<>::Equal(e2.l, expectedRootLabel));
     // Expected: high label Identity
     std::cout << "[CreateNode18 test] high label  (I expected): " << *(e2.p->e[1].l) << "\n";
-//    std::cout << "[CreateNode18 test] high weight (1 expected): " << e2.p->e[1].w << "\n"; TODO print weight
+    //    std::cout << "[CreateNode18 test] high weight (1 expected): " << e2.p->e[1].w << "\n"; TODO print weight
     EXPECT_TRUE(dd::LimEntry<>::isIdentityOperator(e2.p->e[1].l));
 }
 
@@ -2438,7 +2435,7 @@ TEST(LimTest, highLabelPauli3) {
     // make edge e0 = |0>
     std::cout << "[highLabelPauli3 test] making edge |1> by calling MakeDDNode.\n";
     dd::Edge<dd::vNode> e0 = dd->makeDDNode(0, std::array{dd::vEdge::zero, dd::vEdge::one}, false, nullptr);
-    dd::LimEntry<> expectedRootLabel("X");
+    dd::LimEntry<>      expectedRootLabel("X");
 
     EXPECT_TRUE(dd::LimEntry<>::isIdentityOperator(e0.p->e[0].l));
     EXPECT_TRUE(dd::LimEntry<>::isIdentityOperator(e0.p->e[1].l));
@@ -2700,8 +2697,8 @@ TEST(LimTest, getIsomorphismPauli10) {
 TEST(LimTest, returnToCache1) {
     auto dd = std::make_unique<dd::Package<>>(2);
 
-	dd::Complex z = dd->cn.getCached();
-	dd->cn.returnToCache(z);
+    dd::Complex z = dd->cn.getCached();
+    dd->cn.returnToCache(z);
 }
 
 TEST(LimTest, isTowerTest1) {
@@ -2716,8 +2713,8 @@ TEST(LimTest, isTowerTest1) {
 TEST(LimTest, isTowerTest2) {
     auto dd = std::make_unique<dd::Package<>>(1);
 
-    dd::LimEntry<>* Z = new dd::LimEntry<>("Z");
-    auto eMinus = dd->makeDDNode(0, std::array{dd::vEdge::one, dd::vEdge::one}, false, Z);
+    dd::LimEntry<>* Z      = new dd::LimEntry<>("Z");
+    auto            eMinus = dd->makeDDNode(0, std::array{dd::vEdge::one, dd::vEdge::one}, false, Z);
     EXPECT_TRUE(dd->isTower(eMinus));
 }
 
@@ -2738,8 +2735,8 @@ TEST(LimTest, isTowerTest4) {
     auto ePlus = dd->makeDDNode(0, std::array{dd::vEdge::one, dd::vEdge::one}, false, nullptr);
 
     // make edge e0Z = Z|+> = |->
-    dd::LimEntry<>* Z = new dd::LimEntry<>("Z");
-    auto eMinus = dd->makeDDNode(0, std::array{dd::vEdge::one, dd::vEdge::one}, false, Z);
+    dd::LimEntry<>* Z      = new dd::LimEntry<>("Z");
+    auto            eMinus = dd->makeDDNode(0, std::array{dd::vEdge::one, dd::vEdge::one}, false, Z);
 
     // make edge e1 = |++>
     dd::Edge<dd::vNode> e1 = dd->makeDDNode(1, std::array{ePlus, eMinus}, false, nullptr);
@@ -2762,19 +2759,19 @@ TEST(LimTest, isTowerTest5) {
 }
 
 TEST(LimTest, recoverPhaseTest1) {
-	dd::StabilizerGroup G;
-	G.push_back(new dd::LimEntry<>("ZXZ"));
-	G.push_back(new dd::LimEntry<>("-XIX"));
-	G.push_back(new dd::LimEntry<>("IZX"));
+    dd::StabilizerGroup G;
+    G.push_back(new dd::LimEntry<>("ZXZ"));
+    G.push_back(new dd::LimEntry<>("-XIX"));
+    G.push_back(new dd::LimEntry<>("IZX"));
 
-	dd::Pauli::printStabilizerGroup(G);
-	dd::phase_t phase1 = dd::Pauli::recoverPhase(G, new dd::LimEntry<>("ZXZ"));
-	dd::phase_t phase2 = dd::Pauli::recoverPhase(G, new dd::LimEntry<>("-XIX"));
-	dd::phase_t phase3 = dd::Pauli::recoverPhase(G, new dd::LimEntry<>("IZX"));
-	std::cout << "[recoverPhaseTest1] phase1=" << dd::Pauli::phaseToString(phase1) << "; phase2=" << dd::Pauli::phaseToString(phase2) << "; phase3=" << dd::Pauli::phaseToString(phase3) << "\n";
-	EXPECT_EQ(phase1, dd::phase_t::phase_one);
-	EXPECT_EQ(phase2, dd::phase_t::phase_minus_one);
-	EXPECT_EQ(phase3, dd::phase_t::phase_one);
+    dd::Pauli::printStabilizerGroup(G);
+    dd::phase_t phase1 = dd::Pauli::recoverPhase(G, new dd::LimEntry<>("ZXZ"));
+    dd::phase_t phase2 = dd::Pauli::recoverPhase(G, new dd::LimEntry<>("-XIX"));
+    dd::phase_t phase3 = dd::Pauli::recoverPhase(G, new dd::LimEntry<>("IZX"));
+    std::cout << "[recoverPhaseTest1] phase1=" << dd::Pauli::phaseToString(phase1) << "; phase2=" << dd::Pauli::phaseToString(phase2) << "; phase3=" << dd::Pauli::phaseToString(phase3) << "\n";
+    EXPECT_EQ(phase1, dd::phase_t::phase_one);
+    EXPECT_EQ(phase2, dd::phase_t::phase_minus_one);
+    EXPECT_EQ(phase3, dd::phase_t::phase_one);
 }
 
 TEST(LimTest, simpleCliffordCircuit_1) {
@@ -2838,104 +2835,103 @@ TEST(LimTest, simpleCliffordCircuit_3) {
 }
 
 TEST(LimTest, simpleCliffordCircuit_4) {
-	auto qmdd = std::make_unique<dd::Package<>>(3, dd::QMDD_group);
+    auto qmdd = std::make_unique<dd::Package<>>(3, dd::QMDD_group);
 
-	auto state = qmdd->makeZeroState(3);
+    auto state = qmdd->makeZeroState(3);
 
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0), state);        // x q[0];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 1), state);        // x q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state);  // cx q[2],q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), state);  // cx q[0],q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), state);        // h q[2];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 0), state);        // t q[0];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Tdagmat, 3, 1), state);     // tdg q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 2), state);        // t q[2];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state);  // cx q[2],q[1]
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), state);  // cx q[0],q[2];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 1), state);        // t q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), state);  // cx q[0],q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Tdagmat, 3, 2), state);     // tdg q[2];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Tdagmat, 3, 1), state);     // tdg q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), state);  // cx q[0],q[2];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state);  // cx q[2],q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 1), state);        // t q[1];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), state);        // h q[2];
-	state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state);  // cx q[2],q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0), state);       // x q[0];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 1), state);       // x q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state); // cx q[2],q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), state); // cx q[0],q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), state);       // h q[2];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 0), state);       // t q[0];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Tdagmat, 3, 1), state);    // tdg q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 2), state);       // t q[2];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state); // cx q[2],q[1]
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), state); // cx q[0],q[2];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 1), state);       // t q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), state); // cx q[0],q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Tdagmat, 3, 2), state);    // tdg q[2];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Tdagmat, 3, 1), state);    // tdg q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), state); // cx q[0],q[2];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state); // cx q[2],q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Tmat, 3, 1), state);       // t q[1];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), state);       // h q[2];
+    state = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), state); // cx q[2],q[1];
 
+    auto result_qmdd = qmdd->getVector(state);
 
-	auto result_qmdd = qmdd->getVector(state);
+    std::cout << "[simpleCliffordCircuit 4] QMDD result: " << result_qmdd << "\n";
 
-	std::cout << "[simpleCliffordCircuit 4] QMDD result: " << result_qmdd << "\n";
+    auto limdd = std::make_unique<dd::Package<>>(3, dd::Pauli_group);
 
-	auto limdd = std::make_unique<dd::Package<>>(3, dd::Pauli_group);
+    auto stateLIMDD = limdd->makeZeroState(3);
 
-	auto stateLIMDD = limdd->makeZeroState(3);
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0), stateLIMDD);       // x q[0];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 1), stateLIMDD);       // x q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD); // cx q[2],q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), stateLIMDD); // cx q[0],q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD);       // h q[2];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 0), stateLIMDD);       // t q[0];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Tdagmat, 3, 1), stateLIMDD);    // tdg q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 2), stateLIMDD);       // t q[2];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD); // cx q[2],q[1]
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), stateLIMDD); // cx q[0],q[2];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 1), stateLIMDD);       // t q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), stateLIMDD); // cx q[0],q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Tdagmat, 3, 2), stateLIMDD);    // tdg q[2];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Tdagmat, 3, 1), stateLIMDD);    // tdg q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), stateLIMDD); // cx q[0],q[2];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD); // cx q[2],q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 1), stateLIMDD);       // t q[1];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD);       // h q[2];
+    stateLIMDD        = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD); // cx q[2],q[1];
+    auto result_limdd = limdd->getVector(stateLIMDD);
 
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0), stateLIMDD);        // x q[0];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 1), stateLIMDD);        // x q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD);  // cx q[2],q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), stateLIMDD);  // cx q[0],q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD);        // h q[2];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 0), stateLIMDD);        // t q[0];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Tdagmat, 3, 1), stateLIMDD);     // tdg q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 2), stateLIMDD);        // t q[2];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD);  // cx q[2],q[1]
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), stateLIMDD);  // cx q[0],q[2];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 1), stateLIMDD);        // t q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 1), stateLIMDD);  // cx q[0],q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Tdagmat, 3, 2), stateLIMDD);     // tdg q[2];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Tdagmat, 3, 1), stateLIMDD);     // tdg q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0_pc, 2), stateLIMDD);  // cx q[0],q[2];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD);  // cx q[2],q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Tmat, 3, 1), stateLIMDD);        // t q[1];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD);        // h q[2];
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 2_pc, 1), stateLIMDD);  // cx q[2],q[1];
-	auto result_limdd = limdd->getVector(stateLIMDD);
-
-	std::cout << "[simpleCliffordCircuit 4] LIMDD result: " << result_limdd << "\n";
-	// assertions
-	EXPECT_TRUE(qmdd->vectorsApproximatelyEqual(result_qmdd, result_limdd));
+    std::cout << "[simpleCliffordCircuit 4] LIMDD result: " << result_limdd << "\n";
+    // assertions
+    EXPECT_TRUE(qmdd->vectorsApproximatelyEqual(result_qmdd, result_limdd));
 }
 
 TEST(LimTest, simpleCliffordCircuit_5) {
-	auto qmdd = std::make_unique<dd::Package<>>(3, dd::QMDD_group);
+    auto qmdd = std::make_unique<dd::Package<>>(3, dd::QMDD_group);
 
-	auto stateQMDD = qmdd->makeZeroState(3);
+    auto stateQMDD = qmdd->makeZeroState(3);
 
-	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0), stateQMDD);        // x q[0];
-	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 1), stateQMDD);        // x q[0];
-	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), stateQMDD);        // x q[0];
-	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Zmat, 3, 0_pc, 1), stateQMDD);        // x q[0];
-//	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Zmat, 3, 0_pc, 2), stateQMDD);        // x q[0];
-//	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 1), stateQMDD);        // x q[0];
-//	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), stateQMDD);        // x q[0];
+    stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Xmat, 3, 0), stateQMDD);       // x q[0];
+    stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 1), stateQMDD);       // x q[0];
+    stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), stateQMDD);       // x q[0];
+    stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Zmat, 3, 0_pc, 1), stateQMDD); // x q[0];
+                                                                                   //	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Zmat, 3, 0_pc, 2), stateQMDD);        // x q[0];
+                                                                                   //	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 1), stateQMDD);        // x q[0];
+                                                                                   //	stateQMDD = qmdd->multiply(qmdd->makeGateDD(dd::Hmat, 3, 2), stateQMDD);        // x q[0];
 
-	auto resultQMDD = qmdd->getVector(stateQMDD);
-	std::cout << "[simpleCliffordCircuit 5] QMDD result: " << resultQMDD << '\n';
+    auto resultQMDD = qmdd->getVector(stateQMDD);
+    std::cout << "[simpleCliffordCircuit 5] QMDD result: " << resultQMDD << '\n';
 
-	auto limdd = std::make_unique<dd::Package<>>(3, dd::Pauli_group);
+    auto limdd = std::make_unique<dd::Package<>>(3, dd::Pauli_group);
 
-	auto stateLIMDD = limdd->makeZeroState(3);
+    auto stateLIMDD = limdd->makeZeroState(3);
 
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0), stateLIMDD);        // x q[0];
-	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_1");
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 1), stateLIMDD);        // x q[0];
-	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_2");
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD);        // x q[0];
-	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_3");
-	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Zmat, 3, 0_pc, 1), stateLIMDD);        // x q[0];
-	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_4");
-//	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Zmat, 3, 0_pc, 2), stateLIMDD);        // x q[0];
-//	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_5");
-//	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 1), stateLIMDD);        // x q[0];
-//	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_6");
-//	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD);        // x q[0];
-//	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_7");
+    stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Xmat, 3, 0), stateLIMDD); // x q[0];
+    dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_1");
+    stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 1), stateLIMDD); // x q[0];
+    dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_2");
+    stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD); // x q[0];
+    dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_3");
+    stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Zmat, 3, 0_pc, 1), stateLIMDD); // x q[0];
+    dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_4");
+    //	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Zmat, 3, 0_pc, 2), stateLIMDD);        // x q[0];
+    //	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_5");
+    //	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 1), stateLIMDD);        // x q[0];
+    //	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_6");
+    //	stateLIMDD = limdd->multiply(limdd->makeGateDD(dd::Hmat, 3, 2), stateLIMDD);        // x q[0];
+    //	dd::export2Dot(stateLIMDD, "simpleCliffordCircuit_5_7");
 
-	auto resultLIMDD = limdd->getVector(stateLIMDD);
+    auto resultLIMDD = limdd->getVector(stateLIMDD);
 
-	std::cout << "[simpleCliffordCircuit 5] LIMDDresult: " << resultLIMDD << '\n';
-	EXPECT_TRUE(qmdd->vectorsApproximatelyEqual(resultQMDD, resultLIMDD));
+    std::cout << "[simpleCliffordCircuit 5] LIMDDresult: " << resultLIMDD << '\n';
+    EXPECT_TRUE(qmdd->vectorsApproximatelyEqual(resultQMDD, resultLIMDD));
 }
 
 TEST(LimTest, simpleTCircuit) {

@@ -4,16 +4,15 @@
 */
 
 #include "Definitions.hpp"
-#include "LimTable.hpp"
 #include "LimCache.hpp"
+#include "LimTable.hpp"
 
 #include <cassert>
 #include <cstddef>
 #include <vector>
 
 #ifndef DDPACKAGE_LIMFUNCTIONALITY_HPP
-#define DDPACKAGE_LIMFUNCTIONALITY_HPP
-
+    #define DDPACKAGE_LIMFUNCTIONALITY_HPP
 
 namespace dd {
 

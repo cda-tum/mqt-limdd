@@ -3,16 +3,17 @@
 
 #if ENABLE_PROFILING
 
-    #define declareProfilingVariables(functionName) inline static clock_t functionName##Time = 0; inline static long functionName##CallCount = 0
+    #define declareProfilingVariables(functionName)        \
+        inline static clock_t functionName##Time      = 0; \
+        inline static long    functionName##CallCount = 0
 
-    #define startProfile(functionName) \
-[[maybe_unused]] clock_t functionName##Begin = clock();   \
-Profile::functionName##CallCount++; \
+    #define startProfile(functionName)                          \
+        [[maybe_unused]] clock_t functionName##Begin = clock(); \
+        Profile::functionName##CallCount++;
 
     #define endProfile(functionName) Profile::functionName##Time += clock() - functionName##Begin;
 
     #define incrementCallCount(functionName) Profile::functionName##CallCount++;
-
 
 #else
 
@@ -48,4 +49,4 @@ namespace dd {
         inline static size_t intersectionMemoizationHits = 0;
     };
 
-}
+} // namespace dd

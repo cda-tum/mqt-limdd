@@ -26,7 +26,7 @@ PauliAlgebra.hpp: implement several algorithms without a memory leak:
     - GaussianElimination(LimBitset)
        the same as above
     - almost any place where two LIMs are multiplied
-    
+
 PauliAlgebra.hpp: highLabelZWeight
     Here a weight is multiplied by -1, in the function
             weight.multiplyByMinusOne();
