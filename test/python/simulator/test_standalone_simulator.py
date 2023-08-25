@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 from qiskit import *
@@ -14,9 +16,9 @@ class MQTStandaloneSimulatorTests(unittest.TestCase):
 
         sim = ddsim.CircuitSimulator(circ)
         result = sim.simulate(1000)
-        self.assertEqual(len(result.keys()), 2)
-        self.assertIn('000', result.keys())
-        self.assertIn('111', result.keys())
+        assert len(result.keys()) == 2
+        assert "000" in result
+        assert "111" in result
 
     def test_standalone_with_seed(self):
         circ = QuantumCircuit(3)
@@ -26,6 +28,6 @@ class MQTStandaloneSimulatorTests(unittest.TestCase):
 
         sim = ddsim.CircuitSimulator(circ, 1337)
         result = sim.simulate(1000)
-        self.assertEqual(len(result.keys()), 2)
-        self.assertIn('000', result.keys())
-        self.assertIn('111', result.keys())
+        assert len(result.keys()) == 2
+        assert "000" in result
+        assert "111" in result

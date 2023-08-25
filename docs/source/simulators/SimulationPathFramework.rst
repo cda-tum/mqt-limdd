@@ -28,9 +28,9 @@ First, create the circuit to be simulated using qiskit, e.g., in this case a thr
 
     circ = QuantumCircuit(3)
     # the initial state corresponds to ID 0
-    circ.h(0)         # corresponds to ID 1
-    circ.cx(0, 1)     # corresponds to ID 2
-    circ.cx(0, 2)     # corresponds to ID 3
+    circ.h(0)  # corresponds to ID 1
+    circ.cx(0, 1)  # corresponds to ID 2
+    circ.cx(0, 2)  # corresponds to ID 3
 
 
 Then, obtain the simulation path framework qiskit backend. You can choose between the :code:`path_sim_qasm_simulator` and the :code:`path_sim_statevector_simulator`.
@@ -41,7 +41,7 @@ The first just yields a dictionary with the counts of the measurements, while th
     from mqt import ddsim
 
     provider = ddsim.DDSIMProvider()
-    backend = provider.get_backend('path_sim_qasm_simulator')
+    backend = provider.get_backend("path_sim_qasm_simulator")
 
 
 Per default, the backend uses the :code:`sequential` strategy. For this particular example, this means:

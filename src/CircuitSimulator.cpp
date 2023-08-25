@@ -147,7 +147,7 @@ std::map<std::size_t, bool> CircuitSimulator<DDPackage>::single_shot(const bool 
                       << " #controls=" << op->getControls().size()
                       << " statesize=" << dd->size(rootEdge) << "\n";//*/
 
-                auto dd_op = dd::getDD(op.get(), Simulator<DDPackage>::dd);
+            auto dd_op = dd::getDD(op.get(), Simulator<DDPackage>::dd);
             auto tmp   = Simulator<DDPackage>::dd->multiply(dd_op, Simulator<DDPackage>::rootEdge);
             Simulator<DDPackage>::dd->incRef(tmp);
             Simulator<DDPackage>::dd->decRef(Simulator<DDPackage>::rootEdge);
@@ -186,7 +186,7 @@ std::map<std::size_t, bool> CircuitSimulator<DDPackage>::single_shot(const bool 
         }
 
         op_num++;
-        }
+    }
     return classic_values;
 }
 
