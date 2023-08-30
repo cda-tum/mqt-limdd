@@ -369,9 +369,15 @@ namespace dd {
         // Sets the
         // Here we demand that 'weight' and 'weightInv' are retrieved with ComplexTable.getTemporary(..),
         // since they will be assigned values but will not be looked up in the ComplexTable
+        std::size_t highLabelPauliCallCounter = 0;
         void highLabelPauli(vNode* u, vNode* v, LimEntry<>* vLabel, Complex& lowWeight, Complex& highWeight, LimEntry<>& newHighLabel) {
             //Log::log << "[highLabelPauli] low: " << lowWeight << " * I; high: " << highWeight << " * " << *vLabel << '\n';
             //LimEntry<>* newHighLabel;
+            highLabelPauliCallCounter++;
+            if (highLabelPauliCallCounter == 64){
+                printf("The Bug happens now\n");
+            }
+
             if (u == v) {
                 newHighLabel = GramSchmidtFastSorted(u->limVector, vLabel, u->v);
                 highWeight.multiplyByPhase(newHighLabel.getPhase());
@@ -3009,7 +3015,9 @@ namespace dd {
         ///   We can do this because we exploit the algebraic property that the projection operator can be pushed through a Pauli LIM,
         ///   since Proj(x) Z = Z Proj(x), and Proj(b) X = X Proj(1-b)
         vEdge applyHadamardGate2(const Edge<mNode>& x, const vEdge y, Qubit hadamardTarget) {
-            startProfile(applyHadamard) if (y.isTerminal()) return y;
+            applyHadamardCallCount++;
+            startProfile(applyHadamard)
+            if (y.isTerminal()) return y;
             //Log::log << "[Hadamard, " << (int)y.p->v << " qubits] Start. target is " << (int) hadamardTarget << ". y = " << y << "\n";
             LimEntry<> pushedLim(y.l);
             conjugateWithHadamard(pushedLim, hadamardTarget);
