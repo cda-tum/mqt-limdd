@@ -1,7 +1,8 @@
-import re
-import subprocess
-import sys
+from __future__ import annotations
+
 import random
+import re
+
 
 def getGateName(gateId):
     if gateId == 0:
@@ -16,38 +17,52 @@ def getGateName(gateId):
         return "h"
     return "??"
 
+
 def writeRandomCliffordCircuit(file_out, nQubits, nGates, quantumRegister):
     # Start in an equal superposition
     nGatesMade = 0
     for i in range(nQubits):
         file_out.write("h " + quantumRegister + "[" + str(i) + "];\n")
         nGatesMade += 1
-    for g in range(nGatesMade, nGates):
-        target = random.randint(0,nQubits-1)
-        if random.randint(0,2) == 0 or nQubits <= 1:
+    for _g in range(nGatesMade, nGates):
+        target = random.randint(0, nQubits - 1)
+        if random.randint(0, 2) == 0 or nQubits <= 1:
             # Make a single-qubit gate
-            gate = random.randint(0,4)
+            gate = random.randint(0, 4)
             file_out.write(getGateName(gate) + " " + quantumRegister + "[" + str(target) + "];\n")
         else:
             # Make a two-qubit gate
-            gate    = random.randint(0,2)
-            control = random.randint(0,nQubits-1)
+            gate = random.randint(0, 2)
+            control = random.randint(0, nQubits - 1)
             while target == control:
-                control = random.randint(0,nQubits-1)
-            file_out.write("c" + getGateName(gate) + " " + quantumRegister + "[" + str(control) + "], " + quantumRegister + "[" + str(target) + "];\n")
+                control = random.randint(0, nQubits - 1)
+            file_out.write(
+                "c"
+                + getGateName(gate)
+                + " "
+                + quantumRegister
+                + "["
+                + str(control)
+                + "], "
+                + quantumRegister
+                + "["
+                + str(target)
+                + "];\n"
+            )
+
 
 def prependRandomStabilizerCircuit(filename_in, filename_out):
-    f = open(filename_in, "r")
+    f = open(filename_in)
     try:
         out = open(filename_out, "w")
-    except IOError:
+    except OSError:
         print("Could not open file for writing.")
         exit()
 
     beginning = re.compile("OPENQASM|include|qreg|creg")
-    qreg = re.compile("qreg .*\[")
+    qreg = re.compile(r"qreg .*\[")
     qregName = "None"
-    num = re.compile("\d+")
+    num = re.compile(r"\d+")
     nQubits = 0
     for line in f:
         r = beginning.search(line)
@@ -61,9 +76,9 @@ def prependRandomStabilizerCircuit(filename_in, filename_out):
             if len(qregs) != 0:
                 # print("qregs : "+ str(qregs))
                 nums = num.findall(line)
-                if int(nums[len(nums)-1]) > nQubits:
-                    qregName = (qregs[0])[5:len(qregs[0])-1]
-                    nQubits = int(nums[len(nums)-1])
+                if int(nums[len(nums) - 1]) > nQubits:
+                    qregName = (qregs[0])[5 : len(qregs[0]) - 1]
+                    nQubits = int(nums[len(nums) - 1])
                     print("Number of qubits: " + str(nQubits))
                     print("Name of quantum register: " + str(qregName))
             out.write(line)

@@ -1,9 +1,10 @@
-from concurrent import futures
-import logging
-import functools
+from __future__ import annotations
 
-from qiskit.providers import JobV1
-from qiskit.providers import JobStatus, JobError
+import functools
+import logging
+from concurrent import futures
+
+from qiskit.providers import JobError, JobStatus, JobV1
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +18,14 @@ def requires_submit(func):
     Returns:
         callable: the decorated function.
     """
+
     @functools.wraps(func)
     def _wrapper(self, *args, **kwargs):
         if self._future is None:
-            raise JobError("Job not submitted yet!. You have to .submit() first!")
+            msg = "Job not submitted yet!. You have to .submit() first!"
+            raise JobError(msg)
         return func(self, *args, **kwargs)
+
     return _wrapper
 
 
@@ -48,12 +52,10 @@ class DDSIMJob(JobV1):
             JobError: if trying to re-submit the job.
         """
         if self._future is not None:
-            raise JobError("We have already submitted the job!")
+            msg = "We have already submitted the job!"
+            raise JobError(msg)
 
-        self._future = self._executor.submit(self._fn,
-                                             self._job_id,
-                                             self.qobj_experiment,
-                                             **self._args)
+        self._future = self._executor.submit(self._fn, self._job_id, self.qobj_experiment, **self._args)
 
     @requires_submit
     def result(self, timeout=None):

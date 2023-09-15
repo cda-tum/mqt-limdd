@@ -372,7 +372,7 @@ namespace dd {
 #if !NDEBUG
             // Sanity check: are all qubits above nQubits Identity?
             pauli_op op;
-            for (unsigned int i = nQubits+1; i<NUM_QUBITS; i++) {
+            for (unsigned int i = nQubits + 1; i < NUM_QUBITS; i++) {
                 if (getQubit(i) != pauli_op::pauli_id) {
                     throw std::runtime_error("This LIM has a non-identity gate at an illegal position.");
                 }
@@ -384,7 +384,7 @@ namespace dd {
             phase_t newPhase = getPhase();
 #if !fastLazyMultiplication
             /// Step 1: handle the phase, in case the operators do not commute
-            char    op1, op2;
+            char op1, op2;
             for (Qubit i = 0; i <= nQubits; i++) {
                 op1 = getQubit(i);
                 op2 = other.getQubit(i);
@@ -405,12 +405,12 @@ namespace dd {
             /// This part of the code does the same as the code above, but uses several bit-tricks
             ///  this makes use of the bit-wise representation in memory of the Pauli operators
             bool op1x, op1z, op2x, op2z;
-            for (Qubit i=0; i<= nQubits; i++) {
-                op1z = paulis.test(2*i);
-                op1x = paulis.test(2*i+1);
-                op2z = other.paulis.test(2*i);
-                op2x = other.paulis.test(2*i+1);
-                if      (op1x && !op1z && op2x && op2z)
+            for (Qubit i = 0; i <= nQubits; i++) {
+                op1z = paulis.test(2 * i);
+                op1x = paulis.test(2 * i + 1);
+                op2z = other.paulis.test(2 * i);
+                op2x = other.paulis.test(2 * i + 1);
+                if (op1x && !op1z && op2x && op2z)
                     multiplyPhaseObjectBy(newPhase, phase_t::phase_i);
                 else if (op1x && op1z && !op2x && op2z) // YZ =  iX
                     multiplyPhaseObjectBy(newPhase, phase_t::phase_i);
@@ -484,9 +484,8 @@ namespace dd {
             return c;
         }
 
-
         void multiplyByX(Qubit target) {
-            pauli_op op =(pauli_op) getQubit(target);
+            pauli_op op = (pauli_op)getQubit(target);
             switch (op) {
                 case pauli_y:
                     multiplyPhaseBy(phase_minus_i);
@@ -496,11 +495,11 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2*target+1);
+            paulis.flip(2 * target + 1);
         }
 
         void multiplyByY(Qubit target) {
-            pauli_op op = (pauli_op) getQubit(target);
+            pauli_op op = (pauli_op)getQubit(target);
             switch (op) {
                 case pauli_z:
                     multiplyPhaseBy(phase_minus_i);
@@ -510,12 +509,12 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2*target);
-            paulis.flip(2*target+1);
+            paulis.flip(2 * target);
+            paulis.flip(2 * target + 1);
         }
 
         void multiplyByZ(Qubit target) {
-            pauli_op op = (pauli_op) getQubit(target);
+            pauli_op op = (pauli_op)getQubit(target);
             switch (op) {
                 case pauli_x:
                     multiplyPhaseBy(phase_minus_i);
@@ -525,11 +524,11 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2*target);
+            paulis.flip(2 * target);
         }
 
         void leftMultiplyByX(Qubit target) {
-            pauli_op op = (pauli_op) getQubit(target);
+            pauli_op op = (pauli_op)getQubit(target);
             switch (op) {
                 case pauli_y:
                     multiplyPhaseBy(phase_i);
@@ -539,11 +538,11 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2*target+1);
+            paulis.flip(2 * target + 1);
         }
 
         void leftMultiplyByY(Qubit target) {
-            pauli_op op = (pauli_op) getQubit(target);
+            pauli_op op = (pauli_op)getQubit(target);
             switch (op) {
                 case pauli_z:
                     multiplyPhaseBy(phase_i);
@@ -553,12 +552,12 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2*target);
-            paulis.flip(2*target+1);
+            paulis.flip(2 * target);
+            paulis.flip(2 * target + 1);
         }
 
         void leftMultiplyByZ(Qubit target) {
-            pauli_op op = (pauli_op) getQubit(target);
+            pauli_op op = (pauli_op)getQubit(target);
             switch (op) {
                 case pauli_x:
                     multiplyPhaseBy(phase_i);
@@ -568,13 +567,12 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2*target);
+            paulis.flip(2 * target);
         }
-
 
         // Multiply the 'target'-th operator by 'op'
         void multiplyBy(Qubit target, pauli_op op) {
-            switch(op) {
+            switch (op) {
                 case pauli_x:
                     multiplyByX(target);
                     break;
@@ -588,9 +586,9 @@ namespace dd {
                     break;
             }
         }
-        
+
         void leftMultiplyBy(Qubit target, pauli_op op) {
-            switch(op) {
+            switch (op) {
                 case pauli_x:
                     leftMultiplyByX(target);
                     break;
@@ -606,7 +604,7 @@ namespace dd {
         }
 
         void multiplyPhaseByMinusOne() {
-            paulis.flip(2*NUM_QUBITS+1);
+            paulis.flip(2 * NUM_QUBITS + 1);
         }
 
         void setOperator(Qubit v, pauli_op op) {
@@ -649,7 +647,7 @@ namespace dd {
                 return;
             }
             // Set all active qubits to identity (so that only the inactive ones remain)
-            for (unsigned int j=0; j<activeQubits.size(); j++) {
+            for (unsigned int j = 0; j < activeQubits.size(); j++) {
                 setOperator(activeQubits[j], pauli_id);
             }
         }
@@ -661,17 +659,17 @@ namespace dd {
                 return;
             }
             // set the operators before the first active qubits, to identity
-            for (Qubit i=0; i<activeQubits[0]; i++) {
+            for (Qubit i = 0; i < activeQubits[0]; i++) {
                 setOperator(i, pauli_id);
             }
             // set the operators in between the active qubits
-            for (unsigned int j=0; j+1<activeQubits.size(); j++) {
-                for (Qubit i=activeQubits[j]+1; i<activeQubits[j+1]; i++) {
+            for (unsigned int j = 0; j + 1 < activeQubits.size(); j++) {
+                for (Qubit i = activeQubits[j] + 1; i < activeQubits[j + 1]; i++) {
                     setOperator(i, pauli_id);
                 }
             }
             // set the operators after the last active qubit
-            for (Qubit i=activeQubits[activeQubits.size()-1]+1; i< (Qubit) NUM_QUBITS; i++) {
+            for (Qubit i = activeQubits[activeQubits.size() - 1] + 1; i < (Qubit)NUM_QUBITS; i++) {
                 setOperator(i, pauli_id);
             }
         }
@@ -905,28 +903,28 @@ namespace dd {
             //
         }
 
-//        LimWeight<NUM_QUBITS>(const LimWeight<NUM_QUBITS>* a):
-//            lim(a->lim), weight(a->weight) {
-//            //
-//        }
-//
-//        LimWeight<NUM_QUBITS>(const LimEntry<NUM_QUBITS>* a):
-//            lim(new LimEntry<NUM_QUBITS>(a)), weight(Complex::one) {
-//            //
-//        }
-//
-//        LimWeight<NUM_QUBITS>(const std::string pauliString):
-//            lim(new LimEntry<NUM_QUBITS>(pauliString)), weight(Complex::one) {
-//            //
-//        }
+        //        LimWeight<NUM_QUBITS>(const LimWeight<NUM_QUBITS>* a):
+        //            lim(a->lim), weight(a->weight) {
+        //            //
+        //        }
+        //
+        //        LimWeight<NUM_QUBITS>(const LimEntry<NUM_QUBITS>* a):
+        //            lim(new LimEntry<NUM_QUBITS>(a)), weight(Complex::one) {
+        //            //
+        //        }
+        //
+        //        LimWeight<NUM_QUBITS>(const std::string pauliString):
+        //            lim(new LimEntry<NUM_QUBITS>(pauliString)), weight(Complex::one) {
+        //            //
+        //        }
 
-//        void setToIdentityOperator() {
-//            if (lim == nullptr) {
-//                lim = new LimEntry<>();
-//            } else {
-//                lim->setToIdentityOperator();
-//            }
-//        }
+        //        void setToIdentityOperator() {
+        //            if (lim == nullptr) {
+        //                lim = new LimEntry<>();
+        //            } else {
+        //                lim->setToIdentityOperator();
+        //            }
+        //        }
 
         static std::string to_string(const LimWeight<NUM_QUBITS>* a) {
             if (a == LimWeight<NUM_QUBITS>::noLIM) {

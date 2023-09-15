@@ -283,7 +283,7 @@ incorporate weights into the getIsomorphismPauli procedure
     Use a cached weight in getHighLabelPauli
     in normalizeLIMDDPauli, allocate a cached weight, weightInv that highLabel can use,
         so that highLabelPauli doesn't need to receive the whole complexTable
-    do not assume that the low weight is 1 
+    do not assume that the low weight is 1
     cover the case when u.high = 1 / v.high, in the spoon case when u.p == v.p
         work out on paper first
 
@@ -336,7 +336,7 @@ Take steps to fix the segmentation faults, invalid free errors
     make a vNode destructor, which does nothing.
     repair memory leaks in all the methods that need it, in PauliAlgebra.hpp
     (Sebastiaan fixed these)
-    
+
 The following tests fail:
 [  FAILED  ] LimTest.simpleCliffordCircuit
     Because simulation is not yet supported; only representation is supported
@@ -402,7 +402,7 @@ in PauliAlgebra.hpp: intersectGroupsModuloPhase:
 
 in PauliAlgebra.hpp: GramSchmidt(LimBitset)
     refactor local variable y to stack instead of heap
-    
+
 in Package.hpp: normalizeLIMDD
     double-check whether the case when getIsomorphismZ returns the nullptr, is handled correctly
 
@@ -426,7 +426,7 @@ In HighLabel, take the weight on the high edge as an input, and produce a new we
 		return c+di
 	Sketch the HighLabel algorithm
 	Implement the HighLabel algorithm
-		
+
 merge the branch of LIMs-in-reverse-order
 
 in getIsomorphismZ:
@@ -565,7 +565,7 @@ PauliAlgebra.hpp: implement several algorithms without a memory leak:
 	- GaussianElimination(LimBitset)
 	   the same as above
 	- almost any place where two LIMs are multiplied
-	
+
 PauliAlgebra.hpp: highLabelZWeight
 	Here a weight is multiplied by -1, in the function
             weight.multiplyByMinusOne();

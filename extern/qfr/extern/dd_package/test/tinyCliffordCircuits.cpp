@@ -1,11 +1,11 @@
 #include "dd/GateMatrixDefinitions.hpp"
-      #include "dd/QuantumCircuitSimulation.hpp"
-      #include "dd/QuantumGate.hpp"
+#include "dd/QuantumCircuitSimulation.hpp"
+#include "dd/QuantumGate.hpp"
 
-      #include "gtest/gtest.h"
-      #include <memory>
+#include "gtest/gtest.h"
+#include <memory>
 
-      using namespace dd::literals;
+using namespace dd::literals;
 
 // Randomly generated circuit on 3 qubis, containing 7 gates.
 TEST(LimTest, tinyRandomCliffordCircuit_3) {
@@ -15006,4 +15006,3 @@ TEST(LimTest, tinyRandomCliffordCircuit_1002) {
 
     simulateCircuitQMDDvsLIMDDGateByGate(circuit);
 }
-
