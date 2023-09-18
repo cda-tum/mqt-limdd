@@ -35,7 +35,7 @@ namespace dd {
         return !(lhs == rhs);
     }
 
-//    Control Control::noControl = Control{(Qubit)-1, Control::Type::pos};
+    //    Control Control::noControl = Control{(Qubit)-1, Control::Type::pos};
 
     // this allows a set of controls to be indexed by a `Qubit`
     struct CompareControl {
@@ -56,8 +56,12 @@ namespace dd {
     using Controls = std::set<Control, CompareControl>;
 
     inline namespace literals {
-        inline Control operator""_pc(unsigned long long int q) { return {static_cast<Qubit>(q)}; }
-        inline Control operator""_nc(unsigned long long int q) { return {static_cast<Qubit>(q), Control::Type::neg}; }
+        inline Control operator""_pc(unsigned long long int q) {
+            return {static_cast<Qubit>(q)};
+        }
+        inline Control operator""_nc(unsigned long long int q) {
+            return {static_cast<Qubit>(q), Control::Type::neg};
+        }
     } // namespace literals
 } // namespace dd
 

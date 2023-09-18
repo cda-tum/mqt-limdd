@@ -1,5 +1,11 @@
+from __future__ import annotations
+
 import warnings
+
 from mqt import *
 
-warnings.simplefilter('always', DeprecationWarning)
-warnings.warn('Usage via `import jkq` is deprecated in favor of the new prefix. Please use `import mqt` instead.', DeprecationWarning)
+warnings.simplefilter("always", DeprecationWarning)
+warnings.warn(
+    "Usage via `import jkq` is deprecated in favor of the new prefix. Please use `import mqt` instead.",
+    DeprecationWarning,
+)

@@ -1556,7 +1556,6 @@ TEST(LimTest, simpleCircuit134) {
     simulateCircuitQMDDvsLIMDDGateByGate(circuit);
 }
 
-
 // Randomly generated circuit on 3 qubis, containing 7 gates.
 TEST(LimTest, simpleCircuit135) {
     dd::QuantumCircuit circuit(3);
@@ -1586,7 +1585,7 @@ TEST(LimTest, zeroEdgesTest) {
 
     auto limdd = std::make_unique<dd::Package<>>(nqubits, dd::LIMDD_group::Pauli_group, false);
 
-    auto limddState= limdd->makeZeroState(nqubits);
+    auto limddState = limdd->makeZeroState(nqubits);
     EXPECT_TRUE(limddState.p->e[1] == dd::vEdge::zero);
     EXPECT_TRUE(limddState.p->e[0].p->e[1] == dd::vEdge::zero);
 }

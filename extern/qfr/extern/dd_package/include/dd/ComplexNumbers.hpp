@@ -11,11 +11,11 @@
 #include "ComplexTable.hpp"
 #include "ComplexValue.hpp"
 #include "Definitions.hpp"
-#include <iostream>
 
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 namespace dd {
     struct ComplexNumbers {
@@ -95,8 +95,8 @@ namespace dd {
             return ar * ar + ai * ai;
         }
         static inline fp mag(const Complex& a) { // TODO LV: this introduces numerical inaccuracy in the case when a is a purely real, or purely imaginary number, i.e., is not a complex number. Perhaps better to take this into account, as follows?
-//            if (CTEntry::val(a.i) == 0) return CTEntry::val(a.r); // TODO LV: use appropriate code to check "is equal to zero"
-//            if (CTEntry::val(a.r) == 0) return CTEntry::val(a.i);
+                                                 //            if (CTEntry::val(a.i) == 0) return CTEntry::val(a.r); // TODO LV: use appropriate code to check "is equal to zero"
+                                                 //            if (CTEntry::val(a.r) == 0) return CTEntry::val(a.i);
             return std::sqrt(mag2(a));
         }
         static inline fp arg(const Complex& a) {
@@ -154,13 +154,13 @@ namespace dd {
             return lookup(valr, vali);
         }
         Complex lookup(const fp& r, const fp& i) {
-//        	std::cout << "[lookup 1/3] looking up value real = " << r << " imag = " << i << std::endl;
+            //        	std::cout << "[lookup 1/3] looking up value real = " << r << " imag = " << i << std::endl;
             Complex ret{};
 
             auto sign_r = std::signbit(r);
-//            std::cout << "[lookup] sign_r = " << sign_r << '\n';
+            //            std::cout << "[lookup] sign_r = " << sign_r << '\n';
             if (sign_r) {
-//				std::cout << "[lookup 1.5/3] sign bit true.\n";
+                //				std::cout << "[lookup 1.5/3] sign bit true.\n";
                 auto absr = std::abs(r);
                 // if absolute value is close enough to zero, just return the zero entry (avoiding -0.0)
                 if (absr < decltype(complexTable)::tolerance()) {
@@ -169,13 +169,13 @@ namespace dd {
                     ret.r = CTEntry::getNegativePointer(complexTable.lookup(absr));
                 }
             } else {
-//            	std::cout << "[lookup 1.5/3] sign bit false.\n";
+                //            	std::cout << "[lookup 1.5/3] sign bit false.\n";
                 ret.r = complexTable.lookup(r);
             }
-//            std::cout << "[lookup 2/3] ret.r = " << ret.r->value << '\n';
+            //            std::cout << "[lookup 2/3] ret.r = " << ret.r->value << '\n';
 
             auto sign_i = std::signbit(i);
-//            std::cout << "[lookup] sign_i = " << sign_i << std::endl;
+            //            std::cout << "[lookup] sign_i = " << sign_i << std::endl;
             if (sign_i) {
                 auto absi = std::abs(i);
                 // if absolute value is close enough to zero, just return the zero entry (avoiding -0.0)
@@ -188,7 +188,7 @@ namespace dd {
                 ret.i = complexTable.lookup(i);
             }
 
-//            std::cout << "[lookup 3/3] ret = " << ret << "\n";
+            //            std::cout << "[lookup 3/3] ret = " << ret << "\n";
 
             return ret;
         }
@@ -246,7 +246,7 @@ namespace dd {
 
         // TODO limdd LV: I added this function; is that ok? was there a reason it wasn't there before?
         inline Complex getCached(const Complex& c) {
-        	return getCached(CTEntry::val(c.r), CTEntry::val(c.i));
+            return getCached(CTEntry::val(c.r), CTEntry::val(c.i));
         }
 
         inline Complex getCachedIfNonzero(const Complex& c) {
@@ -254,8 +254,8 @@ namespace dd {
                 Complex result = getCached(c);
                 return result;
                 //return getCached(c);
-            }
-            else return Complex::zero;
+            } else
+                return Complex::zero;
         }
 
         void returnToCache(Complex& c) {

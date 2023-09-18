@@ -8,8 +8,12 @@ target_link_libraries(${PROJECT_NAME}_app PRIVATE ${PROJECT_NAME})
 enable_lto(${PROJECT_NAME}_app)
 
 # create symlinks
-add_custom_command(TARGET ${PROJECT_NAME}_app
-                   POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_app ${CMAKE_BINARY_DIR}/${PROJECT_NAME}_app
-                   COMMENT "Creating symlink for ${PROJECT_NAME}_app"
-                   VERBATIM)
+add_custom_command(
+  TARGET ${PROJECT_NAME}_app
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_app
+    ${CMAKE_BINARY_DIR}/${PROJECT_NAME}_app
+  COMMENT "Creating symlink for ${PROJECT_NAME}_app"
+  VERBATIM)

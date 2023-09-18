@@ -552,4 +552,3 @@ TEST(LimTest, hardCircuit_10) {
 
     simulateCircuitQMDDvsLIMDDGateByGate(circuit);
 }
-
