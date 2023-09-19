@@ -24,7 +24,7 @@ jobs:
     name: Build and Test on Ubuntu
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Set up mold as linker
@@ -41,7 +41,7 @@ jobs:
     needs: [build-ubuntu]
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Configure CMake
@@ -56,7 +56,7 @@ jobs:
     needs: [build-ubuntu]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: ilammy/msvc-dev-cmd@v1
@@ -72,7 +72,7 @@ jobs:
     needs: [build-ubuntu]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Set up mold as linker
