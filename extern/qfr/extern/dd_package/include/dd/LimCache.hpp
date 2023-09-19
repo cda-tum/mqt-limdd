@@ -81,7 +81,7 @@ namespace dd {
 
         void returnToCache(LimEntry<>* c) {
             assert(count >= 1);
-            c->next    = available;
+            c->next   = available;
             available = c;
             count -= 1;
         }

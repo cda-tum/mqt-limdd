@@ -12,45 +12,42 @@
 
 namespace dd {
 
-	class _Log {
-	public:
-		bool verbose;  //  0: silent
-		               //  1: loud
+    class _Log {
+    public:
+        bool verbose; //  0: silent
+                      //  1: loud
 
-		_Log(unsigned int _verbose)
-			: verbose(_verbose) {
-		}
+        _Log(unsigned int _verbose):
+            verbose(_verbose) {
+        }
 
+        template<class T>
+        _Log& operator<<(const T& val) {
+            if (verbose) {
+                std::cout << val;
+            }
+            return *this;
+        }
 
-		template <class T>
-		_Log& operator<<(const T& val) {
-			if (verbose) {
-				std::cout << val;
-			}
-			return *this;
-		}
-
-		void flush() const {
-			if (verbose) {
-				std::cout.flush();
-			}
-		}
-	};
+        void flush() const {
+            if (verbose) {
+                std::cout.flush();
+            }
+        }
+    };
 
     inline std::ostream& operator<<(std::ostream& out, [[maybe_unused]] const _Log& log) {
-		return out;
-	}
+        return out;
+    }
 
-	class Log {
-	public:
-		static inline _Log log = _Log(0);
-		static inline char endl = '\n';
-	};
+    class Log {
+    public:
+        static inline _Log log  = _Log(0);
+        static inline char endl = '\n';
+    };
 
-//	Log Log::log(1);
-//	char Log::endl = '\n';
-}
-
-
+    //	Log Log::log(1);
+    //	char Log::endl = '\n';
+} // namespace dd
 
 #endif /* INCLUDE_DD_LOG_HPP_ */

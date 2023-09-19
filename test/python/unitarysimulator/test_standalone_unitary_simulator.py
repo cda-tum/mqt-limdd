@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import unittest
 
+import numpy as np
 from qiskit import *
 
 from mqt import ddsim
-
-import numpy as np
 
 
 class MQTStandaloneUnitarySimulatorTests(unittest.TestCase):
@@ -14,7 +15,7 @@ class MQTStandaloneUnitarySimulatorTests(unittest.TestCase):
         circ.cx(0, 1)
         circ.cx(0, 2)
         self.circuit = circ
-        self.unitary = np.zeros((2 ** circ.num_qubits, 2 ** circ.num_qubits), dtype=complex)
+        self.unitary = np.zeros((2**circ.num_qubits, 2**circ.num_qubits), dtype=complex)
 
     def test_standalone_sequential_mode(self):
         sim = ddsim.UnitarySimulator(self.circuit, mode=ddsim.ConstructionMode.sequential)
@@ -22,7 +23,7 @@ class MQTStandaloneUnitarySimulatorTests(unittest.TestCase):
 
         ddsim.get_matrix(sim, self.unitary)
         print(self.unitary)
-        self.assertEqual(np.count_nonzero(self.unitary), 16)
+        assert np.count_nonzero(self.unitary) == 16
 
     def test_standalone_sequential_mode_with_seed(self):
         sim = ddsim.UnitarySimulator(self.circuit, 1337, mode=ddsim.ConstructionMode.sequential)
@@ -30,7 +31,7 @@ class MQTStandaloneUnitarySimulatorTests(unittest.TestCase):
 
         ddsim.get_matrix(sim, self.unitary)
         print(self.unitary)
-        self.assertEqual(np.count_nonzero(self.unitary), 16)
+        assert np.count_nonzero(self.unitary) == 16
 
     def test_standalone_recursive_mode(self):
         sim = ddsim.UnitarySimulator(self.circuit, mode=ddsim.ConstructionMode.recursive)
@@ -38,7 +39,7 @@ class MQTStandaloneUnitarySimulatorTests(unittest.TestCase):
 
         ddsim.get_matrix(sim, self.unitary)
         print(self.unitary)
-        self.assertEqual(np.count_nonzero(self.unitary), 16)
+        assert np.count_nonzero(self.unitary) == 16
 
     def test_standalone_recursive_mode_with_seed(self):
         sim = ddsim.UnitarySimulator(self.circuit, 1337, mode=ddsim.ConstructionMode.recursive)
@@ -46,4 +47,4 @@ class MQTStandaloneUnitarySimulatorTests(unittest.TestCase):
 
         ddsim.get_matrix(sim, self.unitary)
         print(self.unitary)
-        self.assertEqual(np.count_nonzero(self.unitary), 16)
+        assert np.count_nonzero(self.unitary) == 16

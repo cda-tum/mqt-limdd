@@ -2,7 +2,5 @@
 
 # MQT LIMDD
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > This simulator uses LIMDD type decision diagrams which only cover a subset of functionality available in mqt-ddsim and mqt-core.
-
-

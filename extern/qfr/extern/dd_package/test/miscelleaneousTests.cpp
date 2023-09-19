@@ -287,7 +287,6 @@ TEST(LimTest, bb84Circuit) {
     state = dd->multiply(dd->makeGateDD(dd::Hmat, 8, 4), state);
 }
 
-
 TEST(LimTest, simpleCircuit_graphstate_18) {
     dd::QuantumCircuit c(18);
     c.addGate(dd::Hmat, 0);
@@ -346,8 +345,6 @@ TEST(LimTest, simpleCircuit_graphstate_18) {
     c.addGate(dd::Hmat, 1);
     simulateCircuitQMDDvsLIMDDGateByGate(c);
 }
-
-
 
 TEST(LimTest, shorTest) {
     dd::QuantumCircuit circuit(18);

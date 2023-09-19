@@ -8,7 +8,7 @@
 
 // Set to 'false' to activate debugging
 #ifndef NDEBUG
-#define NDEBUG true
+    #define NDEBUG true
 #endif
 
 // Set to 'true' to activate profiling. This enables
@@ -115,10 +115,10 @@ namespace dd {
     }
 
     enum pauli_op {
-        pauli_id = 'I',
-        pauli_x  = 'X',
-        pauli_y  = 'Y',
-        pauli_z  = 'Z',
+        pauli_id   = 'I',
+        pauli_x    = 'X',
+        pauli_y    = 'Y',
+        pauli_z    = 'Z',
         pauli_none = 0
     };
 
@@ -127,23 +127,23 @@ namespace dd {
         phase_i         = 1,
         phase_minus_one = 2,
         phase_minus_i   = 3,
-		no_phase        = 4
+        no_phase        = 4
     };
 
     enum LIMDD_group {
-    	QMDD_group,
-    	Z_group,
-    	Pauli_group
+        QMDD_group,
+        Z_group,
+        Pauli_group
     };
 
     enum CachingStrategy {
-        QMDDCachingStrategy = 0,
-        cliffordSpecialCaching = 1,
-        localityAwareCachingDirtyTrick = 2,
-        localityAwareCachingClean = 4,
-        lazyMemoizationGroupIntersect = 8,
-        localityAndCliffordCaching = cliffordSpecialCaching | localityAwareCachingDirtyTrick,
-        smartStabilizerGeneration = 16,
+        QMDDCachingStrategy              = 0,
+        cliffordSpecialCaching           = 1,
+        localityAwareCachingDirtyTrick   = 2,
+        localityAwareCachingClean        = 4,
+        lazyMemoizationGroupIntersect    = 8,
+        localityAndCliffordCaching       = cliffordSpecialCaching | localityAwareCachingDirtyTrick,
+        smartStabilizerGeneration        = 16,
         localityAwarePropagateReducedLim = 32,
         skipIdentityGateMultiplication   = 64
     };
@@ -174,7 +174,6 @@ namespace dd {
     inline bool usingSkipIdentityGate(CachingStrategy strategy) {
         return (strategy & skipIdentityGateMultiplication) != 0;
     }
-
 
 } // namespace dd
 

@@ -5,6 +5,7 @@
 #include "dd/Package.hpp"
 #include "dd/QuantumCircuitSimulation.hpp"
 #include "dd/QuantumGate.hpp"
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include <iomanip>
@@ -13,7 +14,6 @@
 #include <sstream>
 
 using namespace dd::literals;
-
 
 // Randomly generated circuit on 2 qubis, containing 7 gates.
 TEST(LimTest, randomTinyCircuit_1) {
@@ -4515,11 +4515,10 @@ TEST(LimTest, randomTinyCircuit_300) {
     simulateCircuitQMDDvsLIMDDGateByGate(circuit);
 }
 
-
 // Randomly generated circuit on 3 qubis, containing 7 gates.
 TEST(LimTest, randomTinyCircuit_301) {
     dd::QuantumCircuit circuit(3);
-    
+
     circuit.addGate(dd::Ymat, 2);
     circuit.addGate(dd::Zmat, 2);
     circuit.addGate(dd::Zmat, 1_nc, 0);
@@ -9015,4 +9014,3 @@ TEST(LimTest, randomTinyCircuit_600) {
 
     simulateCircuitQMDDvsLIMDDGateByGate(circuit);
 }
-

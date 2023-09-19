@@ -223,8 +223,6 @@ int main(int argc, char** argv) {
         output_obj["state_vector"] = ddsim->getVectorPair();
     }
 
-
-
     if (vm.count("ps")) {
         output_obj["statistics"] = {
                 {"simulation_time", duration_simulation.count()},
@@ -235,13 +233,11 @@ int main(int argc, char** argv) {
                 {"shots", shots},
                 {"distinct_results", m.size()},
                 {"seed", ddsim->getSeed()},
-		{"active_nodes", ddsim->dd->size(ddsim->rootEdge)},
-		{"number_of_lims", ddsim->dd->limCount(ddsim->rootEdge)},
-		{"number_of_number", ddsim->dd->numberCount(ddsim->rootEdge)},
-		{"size_of_a_single_node", sizeof(*ddsim->rootEdge.p)},
+                {"active_nodes", ddsim->dd->size(ddsim->rootEdge)},
+                {"number_of_lims", ddsim->dd->limCount(ddsim->rootEdge)},
+                {"number_of_number", ddsim->dd->numberCount(ddsim->rootEdge)},
+                {"size_of_a_single_node", sizeof(*ddsim->rootEdge.p)},
         };
-
-
 
         for (const auto& [stat, value]: ddsim->AdditionalStatistics()) {
             output_obj["statistics"][stat] = value;

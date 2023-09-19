@@ -71,31 +71,28 @@ inline void simulateCircuitLIMDDGateByGate(const dd::QuantumCircuit& circuit) {
 inline void raceCircuitQMDDvsLIMDD(const dd::QuantumCircuit& circuit) {
     //simulateCircuitQMDDvsLIMDDGateByGate(circuit);
     //return;
-    auto qmdd = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::QMDD_group);
-    auto limddOld = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false,
+    auto qmdd          = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::QMDD_group);
+    auto limddOld      = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false,
                                                     dd::CachingStrategy::QMDDCachingStrategy);
-    auto limddClifford = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false,(dd::CachingStrategy)(
-        dd::CachingStrategy::cliffordSpecialCaching |
-        dd::CachingStrategy::lazyMemoizationGroupIntersect | dd::CachingStrategy::smartStabilizerGeneration | dd::CachingStrategy::localityAwareCachingDirtyTrick |
-        dd::CachingStrategy::localityAwarePropagateReducedLim));
+    auto limddClifford = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false, (dd::CachingStrategy)(dd::CachingStrategy::cliffordSpecialCaching | dd::CachingStrategy::lazyMemoizationGroupIntersect | dd::CachingStrategy::smartStabilizerGeneration | dd::CachingStrategy::localityAwareCachingDirtyTrick | dd::CachingStrategy::localityAwarePropagateReducedLim));
     auto limddLocality = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false,
-                                                 dd::CachingStrategy::localityAwareCachingDirtyTrick);
+                                                         dd::CachingStrategy::localityAwareCachingDirtyTrick);
 
     dd::vEdge resultEdge[4];
-    clock_t begin[4], end[4];
+    clock_t   begin[4], end[4];
 
     // reset times
-    dd::Profile::groupIntersectTime           = 0;
-    dd::Profile::cosetIntersectModPTime       = 0;
-    dd::Profile::cosetIntersectPauliTime      = 0;
-    dd::Profile::constructStabilizerTime      = 0;
-    dd::Profile::recoverPhaseTime             = 0;
-    dd::Profile::gramSchmidtTime              = 0;
-    dd::Profile::gaussianEliminationTime      = 0;
-    dd::Profile::normalizeLIMDDTime           = 0;
-    dd::Profile::makeDDNodeTime               = 0;
-    dd::Profile::addTime                      = 0;
-    dd::Profile::multiply2Time                = 0;
+    dd::Profile::groupIntersectTime      = 0;
+    dd::Profile::cosetIntersectModPTime  = 0;
+    dd::Profile::cosetIntersectPauliTime = 0;
+    dd::Profile::constructStabilizerTime = 0;
+    dd::Profile::recoverPhaseTime        = 0;
+    dd::Profile::gramSchmidtTime         = 0;
+    dd::Profile::gaussianEliminationTime = 0;
+    dd::Profile::normalizeLIMDDTime      = 0;
+    dd::Profile::makeDDNodeTime          = 0;
+    dd::Profile::addTime                 = 0;
+    dd::Profile::multiply2Time           = 0;
     // reset call counts
     dd::Profile::groupIntersectCallCount      = 0;
     dd::Profile::recoverPhaseCallCount        = 0;
@@ -111,7 +108,7 @@ inline void raceCircuitQMDDvsLIMDD(const dd::QuantumCircuit& circuit) {
     dd::Profile::addCallCount                 = 0;
     dd::Profile::multiply2CallCount           = 0;
 
-    dd::Profile::intersectionMemoizationHits  = 0;
+    dd::Profile::intersectionMemoizationHits = 0;
 
     std::cout << "[race circuit] Simulating old LIMDD\n";
     // simulate old LIMDD
@@ -121,9 +118,9 @@ inline void raceCircuitQMDDvsLIMDD(const dd::QuantumCircuit& circuit) {
 
     // simulate clifford LIMDD
     std::cout << "[race circuit] Simulating LIMDD with Clifford-specialized caching\n";
-    begin[1] = clock();
+    begin[1]      = clock();
     resultEdge[1] = limddClifford->simulateCircuit(circuit);
-    end[1] = clock();
+    end[1]        = clock();
 
     // simulate locality-aware LIMDD
     std::cout << "[race circuit] Simulating LIMDD with locality-aware caching, but without Clifford-specialized caching\n";
@@ -143,7 +140,7 @@ inline void raceCircuitQMDDvsLIMDD(const dd::QuantumCircuit& circuit) {
 
     std::ofstream statsfile;
     statsfile.open("DDstatsfile.csv", std::ios_base::app);
-    statsfile << (int) circuit.n << ",";
+    statsfile << (int)circuit.n << ",";
     //format: nqubits, version name, time taken, multiply calls, add calls, nodecount, gates, time group intersect, time coset mod phase intersect, time coset pauli intersect, time construct stabs, time recover phase, time gram schmidt, gaussian elimination time..
     // .. normalize time, group intersect calls, coset intersect calls, construct stabs calls, recover phase calls, gram schmidt calls, normalizeLIMDD() calls, makeDDNode calls, intersection memoziation hits, gaussian elim calls,
     // multiply cache lookups, multiply cache hits, multiply cache hit ratio, add cache lookups, add cache hits, add cache ratio
@@ -165,13 +162,7 @@ inline void simulateCircuitQMDDvsLIMDDGateByGate(const dd::QuantumCircuit& circu
     //raceCircuitQMDDvsLIMDD(circuit);
     //return;
     auto qmdd  = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::QMDD_group);
-    auto limdd = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, true, (dd::CachingStrategy)(
-        dd::CachingStrategy::cliffordSpecialCaching |
-        dd::CachingStrategy::lazyMemoizationGroupIntersect |
-        dd::CachingStrategy::smartStabilizerGeneration |
-        dd::CachingStrategy::localityAwareCachingDirtyTrick |
-        dd::CachingStrategy::skipIdentityGateMultiplication
-    ));
+    auto limdd = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, true, (dd::CachingStrategy)(dd::CachingStrategy::cliffordSpecialCaching | dd::CachingStrategy::lazyMemoizationGroupIntersect | dd::CachingStrategy::smartStabilizerGeneration | dd::CachingStrategy::localityAwareCachingDirtyTrick | dd::CachingStrategy::skipIdentityGateMultiplication));
     //auto limdd2 = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false, (dd::CachingStrategy)(dd::CachingStrategy::cliffordSpecialCaching | dd::CachingStrategy::lazyMemoizationGroupIntersect));
 
     auto              qmddState  = qmdd->makeZeroState(circuit.n);
@@ -275,7 +266,6 @@ inline void simulateCircuitQMDDvsLIMDDGateByGate(const dd::QuantumCircuit& circu
 
     std::cout << "[simulate circuit] qmdd  multiply calls: " << qmdd->multiply2CallCount << std::endl;
     std::cout << "[simulate circuit] limdd multiply calls: " << limdd->multiply2CallCount << std::endl;
-
 
     //    limdd->printVector(limddState);
     //    qmdd->printVector(qmddState);
