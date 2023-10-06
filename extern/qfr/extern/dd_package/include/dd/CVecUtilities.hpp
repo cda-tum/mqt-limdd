@@ -1,33 +1,10 @@
-#pragma once
-
 #ifndef CVEC_UTITITIES_HPP
     #define CVEC_UTITITIES_HPP
 
     #include "Complex.hpp"
     #include "Definitions.hpp"
-    #include "Log.hpp"
 
 namespace dd {
-
-    inline _Log& outputCVec(const CVec& vec) {
-        Log::log << "[";
-        for (unsigned int i = 0; i < vec.size(); i++) {
-            Log::log << vec[i] << ", ";
-        }
-        return Log::log << "]";
-    }
-
-    inline void printCVec(const std::vector<std::complex<fp>>& vec) {
-        Log::log << outputCVec(vec);
-    }
-
-    inline std::ostream& operator<<(std::ostream& out, const dd::CVec& vec) {
-        for (unsigned int i = 0; i < vec.size(); i++) {
-            out << vec[i] << ' ';
-        }
-        return out;
-    }
-
     inline bool isZeroVector(const CVec& vec) {
         for (unsigned int i = 0; i < vec.size(); i++) {
             if (!Complex::approximatelyEqual(vec[i], 0)) {

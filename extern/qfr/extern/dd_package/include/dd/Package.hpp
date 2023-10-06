@@ -678,8 +678,8 @@ namespace dd {
                 Log::log << "[normalizeLIMDD] ERROR in step 4: old node is not isomorphic to canonical node.\n"
                          << "|- Old node is: " << oldNode << '\n'
                          << "|- new node is: " << *result.p << '\n'
-                         << "|- old node vector: " << oldNodeVec << '\n'
-                         << "|- new node vector: " << rpVec << '\n'
+                         << "|- old node vector: " << outputCVec(oldNodeVec) << '\n'
+                         << "|- new node vector: " << outputCVec(rpVec) << '\n'
                          << "|- stab(oldLow)  = " << groupToString(oldNode.e[0].p->limVector, result.p->v - 1) << "\n"
                          << "|- stab(oldHigh) = " << groupToString(oldNode.e[1].p->limVector, result.p->v - 1) << "\n"
                          << "|- stab(newLow)  = " << groupToString(result.p->e[0].p->limVector, result.p->v - 1) << "\n"
