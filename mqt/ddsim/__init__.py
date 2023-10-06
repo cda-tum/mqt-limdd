@@ -10,9 +10,9 @@ from .pyddsim import (
     PathSimulatorConfiguration,
     PathSimulatorMode,
     UnitarySimulator,
+    __version__,
     dump_tensor_network,
     get_matrix,
-    __version__
 )
 
 __all__ = [
