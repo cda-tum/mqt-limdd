@@ -10,9 +10,9 @@
 
 #include "Definitions.hpp"
 
+#include <complex>
 #include <iostream>
 #include <vector>
-#include <complex>
 
 namespace dd {
 
