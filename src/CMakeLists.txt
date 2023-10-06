@@ -20,13 +20,11 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/UnitarySimulator.cpp
   ${PROJECT_SOURCE_DIR}/include/PathSimulator.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/PathSimulator.cpp)
-target_include_directories(
-  ${PROJECT_NAME}
-  PUBLIC $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/include>)
+target_include_directories(${PROJECT_NAME}
+                           PUBLIC $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/include>)
 # set required C++ standard and disable compiler specific extensions
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_CXX_STANDARD_REQUIRED ON
-                                                 CXX_EXTENSIONS OFF)
+set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
 
 set(JSON_MultipleHeaders
     OFF
@@ -56,8 +54,7 @@ endif()
 include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_supported)
 if(ipo_supported)
-  set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION
-                                                   TRUE)
+  set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 # set compiler flags depending on compiler
 if(MSVC)
@@ -69,13 +66,11 @@ else()
     # adjust visibility settings for building Python bindings
     include(CheckPIESupported)
     check_pie_supported()
-    set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE
-                                                     ON)
+    set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
     target_compile_options(${PROJECT_NAME} PUBLIC -fvisibility=hidden)
   endif()
   if(NOT DEPLOY)
-    # only include machine-specific optimizations when building for the host
-    # machine
+    # only include machine-specific optimizations when building for the host machine
     target_compile_options(${PROJECT_NAME} PUBLIC -mtune=native)
     include(CheckCXXCompilerFlag)
     check_cxx_compiler_flag(-march=native HAS_MARCH_NATIVE)
