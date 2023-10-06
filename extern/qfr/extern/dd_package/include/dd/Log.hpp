@@ -8,7 +8,11 @@
 #ifndef INCLUDE_DD_LOG_HPP_
 #define INCLUDE_DD_LOG_HPP_
 
+#include "Definitions.hpp"
+
 #include <iostream>
+#include <vector>
+#include <complex>
 
 namespace dd {
 
