@@ -37,7 +37,7 @@ from mqt import qfr
 from qiskit import QuantumCircuit
 
 # create your quantum circuit
-qc = < ... >
+qc = ...
 
 # construct the functionality of the circuit
 results = qfr.construct(qc)

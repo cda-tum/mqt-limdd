@@ -1046,7 +1046,7 @@ namespace dd {
 
         Entry* lookup_str(const std::string pauliString) {
             // different name from lookup because 0 can apparently be seen as a
-            // string (and therefor overloading lookup on input type is an issue)
+            // string (and therefore overloading lookup on input type is an issue)
             // TODO: maybe find a way to overload lookup() cleanly?
             PauliBitSet bitSet = LimEntry<NUM_QUBITS>::bitsetFromString(pauliString);
             return lookup(bitSet);

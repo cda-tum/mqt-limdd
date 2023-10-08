@@ -47,9 +47,9 @@ add_custom_command(
   VERBATIM)
 
 macro(package_add_test TESTNAME)
-  # create an exectuable in which the tests will be stored
+  # create an executable in which the tests will be stored
   add_executable(${TESTNAME} ${ARGN})
-  # link the Google test infrastructure and a default main fuction to the test executable.
+  # link the Google test infrastructure and a default main function to the test executable.
   target_link_libraries(${TESTNAME} PRIVATE ${PROJECT_NAME} gmock gtest_main)
   # discover tests
   gtest_discover_tests(

@@ -97,4 +97,4 @@ repos:
     rev: v2.2.5
     hooks:
       - id: codespell
-        args: ["-L", "wille,linz,braket,coo", "--skip", "*.ipynb"]
+        args: ["-L", "wille,linz,braket,coo,pres", "--skip", "*.ipynb"]

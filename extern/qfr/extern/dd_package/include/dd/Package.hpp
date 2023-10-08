@@ -259,7 +259,7 @@ namespace dd {
                 ComplexNumbers::div(min.w, min.w, r.w);
                 min.w = cn.lookup(min.w);
             } else {
-                //            	std::cout << "[normalize] now cached, so getting temp numer. edge is " << r << "\n";
+                //            	std::cout << "[normalize] now cached, so getting temp number. edge is " << r << "\n";
                 auto c = cn.getTemporary();
                 ComplexNumbers::div(c, min.w, r.w);
                 min.w = cn.lookup(c);
@@ -584,7 +584,7 @@ namespace dd {
                 result.l->multiplyBy(result.p->e[0].l); // = LimEntry<>::multiply(result.l, result.p->e[0].l);
                 /// Step 2: Set the low and high edge labels to 'Identity'
                 result.p->e[0].l = nullptr; // TODO possible memory leak
-                result.p->e[1].l = nullptr; // TODO posible memory leak
+                result.p->e[1].l = nullptr; // TODO possible memory leak
                 /// Step 3: multiply the root weight by the LIM phase; set the LIM phase to +1
                 result.w.multiplyByPhase(result.l->getPhase());
                 result.l->setPhase(phase_t::phase_one);
@@ -4977,14 +4977,14 @@ namespace dd {
                 std::clog << "\nOffending weight: " << edge.w << "\n";
                 std::clog << "Bits: " << std::hexfloat << CTEntry::val(edge.w.r) << "r " << CTEntry::val(edge.w.i) << std::defaultfloat << "i\n";
                 debugnode(edge.p);
-                throw std::runtime_error("Ref-Count mismatch for " + std::to_string(r_ptr->value) + "(r): " + std::to_string(weight_map.at(r_ptr)) + " occurences in DD but Ref-Count is only " + std::to_string(r_ptr->refCount));
+                throw std::runtime_error("Ref-Count mismatch for " + std::to_string(r_ptr->value) + "(r): " + std::to_string(weight_map.at(r_ptr)) + " occurrences in DD but Ref-Count is only " + std::to_string(r_ptr->refCount));
             }
 
             if (weight_map.at(i_ptr) > i_ptr->refCount && i_ptr != Complex::zero.i && i_ptr != Complex::one.r && i_ptr != &ComplexTable<>::sqrt2_2) {
                 std::clog << "\nOffending weight: " << edge.w << "\n";
                 std::clog << "Bits: " << std::hexfloat << CTEntry::val(edge.w.r) << "r " << CTEntry::val(edge.w.i) << std::defaultfloat << "i\n";
                 debugnode(edge.p);
-                throw std::runtime_error("Ref-Count mismatch for " + std::to_string(i_ptr->value) + "(i): " + std::to_string(weight_map.at(i_ptr)) + " occurences in DD but Ref-Count is only " + std::to_string(i_ptr->refCount));
+                throw std::runtime_error("Ref-Count mismatch for " + std::to_string(i_ptr->value) + "(i): " + std::to_string(weight_map.at(i_ptr)) + " occurrences in DD but Ref-Count is only " + std::to_string(i_ptr->refCount));
             }
 
             if (edge.isTerminal()) {
@@ -4993,7 +4993,7 @@ namespace dd {
 
             if (node_map.at(edge.p) != edge.p->ref) {
                 debugnode(edge.p);
-                throw std::runtime_error("Ref-Count mismatch for node: " + std::to_string(node_map.at(edge.p)) + " occurences in DD but Ref-Count is " + std::to_string(edge.p->ref));
+                throw std::runtime_error("Ref-Count mismatch for node: " + std::to_string(node_map.at(edge.p)) + " occurrences in DD but Ref-Count is " + std::to_string(edge.p->ref));
             }
             for (auto child: edge.p->e) {
                 if (!child.isTerminal() && child.p->v != edge.p->v - 1) {

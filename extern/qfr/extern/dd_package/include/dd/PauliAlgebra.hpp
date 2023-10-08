@@ -1276,7 +1276,7 @@ namespace dd {
         //        Edge<vNode> vHigh = v->e[1];
         //        assert(!(uLow.isZeroTerminal() && uHigh.isZeroTerminal()));
         //        assert(!(vLow.isZeroTerminal() && vHigh.isZeroTerminal()));
-        //        // TODO this assertion is not necessarily true; in the normalizeLIMDD function, we hve vLow.l != nullptr
+        //        // TODO this assertion is not necessarily true; in the normalizeLIMDD function, we have vLow.l != nullptr
         //        assert(uLow.l == nullptr && vLow.l == nullptr);
         //        // Case 0.1: the nodes are equal
         //        if (u == v) {
@@ -1362,7 +1362,7 @@ namespace dd {
         assert(u != nullptr);
         assert(v != nullptr);
         //        Log::log << "[getIsomorphismPauli] Start. states have " << (int) u->v+1 << " qubits.\n";
-        assert(u->v == v->v); // Assert u and v have the same nubmer of qubits
+        assert(u->v == v->v); // Assert u and v have the same number of qubits
         foundIsomorphism  = false;
         Edge<vNode> uLow  = u->e[0];
         Edge<vNode> uHigh = u->e[1];
@@ -1532,7 +1532,7 @@ namespace dd {
             Complex rhoVdivRhoU = cn.getCached();
             ComplexNumbers::mul(rhoU, u->e[1].w, v->e[0].w);
             ComplexNumbers::mul(rhoV, u->e[0].w, v->e[1].w);
-            /// Below is an alternative way to compute rhoVdivRhoU using division; but since this leads to slightly higher rates of numerical error, we use multiplication isntead, above
+            /// Below is an alternative way to compute rhoVdivRhoU using division; but since this leads to slightly higher rates of numerical error, we use multiplication instead, above
             //ComplexNumbers::div(rhoU, u->e[1].w, u->e[0].w);
             //ComplexNumbers::div(rhoV, v->e[1].w, v->e[0].w);
             ComplexNumbers::div(rhoVdivRhoU, rhoV, rhoU);

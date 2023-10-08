@@ -141,8 +141,8 @@ def writeComputePartStage1(file_out, n):
 
 
 def writeHammingControlStage(file_out, n, k):
-    # assume regsiter {q[n]...q[n+1]} contains the indicator bits of weight k;
-    # and then overwrite this register so that it contains the indicator bits of weigth k
+    # assume register {q[n]...q[n+1]} contains the indicator bits of weight k;
+    # and then overwrite this register so that it contains the indicator bits of weight k
     file_out.write("// Stage " + str(k) + " of Hamming control gates\n")
     if k == 1:
         # stage 1 only has a compute part; it does not have an compute part, nor a swap part

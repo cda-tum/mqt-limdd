@@ -200,7 +200,7 @@ namespace qc {
         StandardOperation(nq, controls, target, X, 0., 0., 0., startingQubit) {
     }
 
-    // MCF (cSWAP), Peres, paramterized two target Constructor
+    // MCF (cSWAP), Peres, parameterized two target Constructor
     StandardOperation::StandardOperation(dd::QubitCount nq, const dd::Controls& controls, dd::Qubit target0, dd::Qubit target1, OpType g, dd::fp lambda, dd::fp phi, dd::fp theta, dd::Qubit startingQubit):
         StandardOperation(nq, controls, {target0, target1}, g, lambda, phi, theta, startingQubit) {
     }

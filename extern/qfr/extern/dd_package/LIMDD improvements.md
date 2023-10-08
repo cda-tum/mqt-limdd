@@ -18,7 +18,7 @@ because dynamically allocating memory is slower than doing computations with obj
 
 ## Better Runtimes
 
-- (done) In `makeDDNode`, only call `constructStabilizerGeneratorSet` when a node is newly created, and _not_ when a new is succesfully looked up from the UniqueTable.
+- (done) In `makeDDNode`, only call `constructStabilizerGeneratorSet` when a node is newly created, and _not_ when a new is successfully looked up from the UniqueTable.
   - To this end, refactor the `nodeTable.lookup()` function so it takes an extra bool parameter by reference, which it sets to `true` iff the node that is returned was newly created, and to false when the node existed in the Table.
 - ### Hard-code certain gates, to allow linear-time processing, using the algorithms presented in the new arxiv version of the LIMDD paper
   - Implement `getMatrixDescription(mNode)` which, given a Matrix LIMDD, figures out which gates is being implemented
@@ -92,7 +92,7 @@ The following functions in `PauliAlgebra.hpp` currently possibly have memory lea
 
 - (done) `highLabelPauli()`
   - (done) make an inventory of what should be done here
-  - (done) refactor the `GH` concatentation into `StabilizerGroupValue`
+  - (done) refactor the `GH` concatenation into `StabilizerGroupValue`
   - (done) call `GramSchmidt(StabilizerGroupValue)`
 - (done) `constructStabilizerGeneratorSetPauli()`
   - (done) move to `PauliAlgebra.hpp`
@@ -148,7 +148,7 @@ The following functions in `PauliAlgebra.hpp` currently possibly have memory lea
 
 # Success criteria
 
-It is useful to set up success criteria, so that we know a succesful implementation when we see one:
+It is useful to set up success criteria, so that we know a successful implementation when we see one:
 
 - There are no memory leaks
 - Clifford circuits and stabilizer states have very fast runtimes

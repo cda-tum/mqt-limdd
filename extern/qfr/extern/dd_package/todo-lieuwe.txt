@@ -50,7 +50,7 @@ Today ,I want to implement:
    + in getCosetIntersectionElementPauli
       - refactor so that no std::vector is made; instead, keep one (or two?) elements in local stack storage, found in the first loop
       + refactor so that Gaussian elimination is performed only once; currently, this is done twice: first in getCosetIntersectionElementModuloPhase, and second in intersectGroupsModuloPhase.
-        it seems like some redundant work can be expediated
+        it seems like some redundant work can be expedited
          + make a new function, getCosetIntersectionElementPauli2(), which takes as input also a const vec<LimBitset<N, 2N>>& GH_Id, which is a gaussian-eliminated matrix of G and H
          + same for getCosetIntersectionElementModuloPhase2()
       + in constructStabilizerGroup, check which calls to getCosetIntersectionElementPauli() use the same data
@@ -288,7 +288,7 @@ incorporate weights into the getIsomorphismPauli procedure
         work out on paper first
 
 in normalizeLIMDD, in the high knife case, do we remove the high label, if it is present?
-    it seemes counterintuitive to do, but we should set the label to I
+    it seems counterintuitive to do, but we should set the label to I
 
 - make 10 stabilizer circuits
 - make 10 non-stabilizer circuits, with T gates
