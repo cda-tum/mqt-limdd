@@ -10,7 +10,6 @@
 #include "LimTable.hpp"
 #include "Log.hpp"
 #include "Node.hpp"
-#include "Package.hpp"
 #include "PauliUtilities.hpp"
 #include "QuantumGate.hpp"
 
@@ -990,14 +989,12 @@ namespace dd {
                 //toColumnEchelonFormModuloPhase(GH_Id);
                 //pruneZeroColumnsModuloPhase(GH_Id);
                 //std::sort(GH_Id.begin(), GH_Id.end(), LimBitset<NUM_QUBITS, 2*NUM_QUBITS>::greaterValue);
-
-                std::bitset<NUM_QUBITS>
-                                              decomposition; // decomposition of 'a'
-        LimBitset<NUM_QUBITS, 2 * NUM_QUBITS> a_bitset(a);
+                LimBitset<NUM_QUBITS, 2 * NUM_QUBITS>
+                        a_bitset(a);
         a_bitset = GramSchmidtFastSorted(GH_Id_CEF, a_bitset, nQubits);
         std::bitset<NUM_QUBITS> decomposition_G, decomposition_H; // these bitsets are initialized to 00...0, according to the C++ reference
-        bitsetCopySegment(decomposition_G, a_bitset.bits, 0, 0, G.size());
-        bitsetCopySegment(decomposition_H, a_bitset.bits, 0, G.size(), G.size() + H.size());
+        bitsetCopySegment(decomposition_G, a_bitset.bits, 0, 0, static_cast<unsigned>(G.size()));
+        bitsetCopySegment(decomposition_H, a_bitset.bits, 0, static_cast<unsigned>(G.size()), static_cast<unsigned>(G.size() + H.size()));
         LimEntry<NUM_QUBITS> a_G = getProductOfElements(G, decomposition_G, nQubits);
         //        Log::log << "[coset intersection P] got first product. Computing second product.\n"; Log::log.flush();
         LimEntry<NUM_QUBITS> a_H     = getProductOfElements(H, decomposition_H, nQubits);
@@ -1276,7 +1273,7 @@ namespace dd {
         //        Edge<vNode> vHigh = v->e[1];
         //        assert(!(uLow.isZeroTerminal() && uHigh.isZeroTerminal()));
         //        assert(!(vLow.isZeroTerminal() && vHigh.isZeroTerminal()));
-        //        // TODO this assertion is not necessarily true; in the normalizeLIMDD function, we hve vLow.l != nullptr
+        //        // TODO this assertion is not necessarily true; in the normalizeLIMDD function, we have vLow.l != nullptr
         //        assert(uLow.l == nullptr && vLow.l == nullptr);
         //        // Case 0.1: the nodes are equal
         //        if (u == v) {
@@ -1362,7 +1359,7 @@ namespace dd {
         assert(u != nullptr);
         assert(v != nullptr);
         //        Log::log << "[getIsomorphismPauli] Start. states have " << (int) u->v+1 << " qubits.\n";
-        assert(u->v == v->v); // Assert u and v have the same nubmer of qubits
+        assert(u->v == v->v); // Assert u and v have the same number of qubits
         foundIsomorphism  = false;
         Edge<vNode> uLow  = u->e[0];
         Edge<vNode> uHigh = u->e[1];
@@ -1532,7 +1529,7 @@ namespace dd {
             Complex rhoVdivRhoU = cn.getCached();
             ComplexNumbers::mul(rhoU, u->e[1].w, v->e[0].w);
             ComplexNumbers::mul(rhoV, u->e[0].w, v->e[1].w);
-            /// Below is an alternative way to compute rhoVdivRhoU using division; but since this leads to slightly higher rates of numerical error, we use multiplication isntead, above
+            /// Below is an alternative way to compute rhoVdivRhoU using division; but since this leads to slightly higher rates of numerical error, we use multiplication instead, above
             //ComplexNumbers::div(rhoU, u->e[1].w, u->e[0].w);
             //ComplexNumbers::div(rhoV, v->e[1].w, v->e[0].w);
             ComplexNumbers::div(rhoVdivRhoU, rhoV, rhoU);

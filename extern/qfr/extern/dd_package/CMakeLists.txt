@@ -20,14 +20,12 @@ option(BUILD_DD_PACKAGE_TESTS "Also build tests for DD package")
 # build type settings
 set(default_build_type "Release")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(
-    STATUS
-      "Setting build type to '${default_build_type}' as none was specified.")
+  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE
       "${default_build_type}"
       CACHE STRING "Choose the type of build." FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-                                               "MinSizeRel" "RelWithDebInfo")
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel"
+                                               "RelWithDebInfo")
 endif()
 
 # add main library code
@@ -60,9 +58,8 @@ target_sources(
     $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/include/dd/UniqueTable.hpp>)
 
 # set include directories
-target_include_directories(
-  ${PROJECT_NAME}
-  INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/include>)
+target_include_directories(${PROJECT_NAME}
+                           INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/include>)
 
 # set required C++ standard and disable compiler specific extensions
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
@@ -73,12 +70,10 @@ if(MSVC)
 else()
   target_compile_options(
     ${PROJECT_NAME}
-    INTERFACE -Wall -Wextra -pedantic
-              $<$<CONFIG:DEBUG>:-O0>$<$<CONFIG:RELEASE>:-fno-math-errno
+    INTERFACE -Wall -Wextra -pedantic $<$<CONFIG:DEBUG>:-O0>$<$<CONFIG:RELEASE>:-fno-math-errno
               -ffinite-math-only -fno-trapping-math>)
   if(NOT DEPLOY)
-    # only include machine-specific optimizations when building for the host
-    # machine
+    # only include machine-specific optimizations when building for the host machine
     target_compile_options(${PROJECT_NAME} INTERFACE -mtune=native)
     include(CheckCXXCompilerFlag)
     check_cxx_compiler_flag(-march=native HAS_MARCH_NATIVE)
@@ -88,8 +83,8 @@ else()
   endif()
 endif()
 
-# add coverage compiler and linker flag to the library and all targets that link
-# against it, if COVERAGE is set
+# add coverage compiler and linker flag to the library and all targets that link against it, if
+# COVERAGE is set
 if(COVERAGE)
   target_compile_options(${PROJECT_NAME} INTERFACE --coverage)
   target_link_libraries(${PROJECT_NAME} INTERFACE --coverage)
@@ -99,14 +94,13 @@ endif()
 add_library(MQT::DDPackage ALIAS ${PROJECT_NAME})
 
 macro(enable_lto TARGET_NAME)
-  # enable interprocedural optimization if it is supported (Clang's ThinLTO does
-  # not work with Ubuntu 20.04's default linker at the moment)
+  # enable interprocedural optimization if it is supported (Clang's ThinLTO does not work with
+  # Ubuntu 20.04's default linker at the moment)
   include(CheckIPOSupported)
   check_ipo_supported(RESULT ipo_supported)
-  if(ipo_supported AND NOT ((${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-                            AND (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")))
-    set_target_properties(${TARGETNAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION
-                                                   TRUE)
+  if(ipo_supported AND NOT ((${CMAKE_SYSTEM_NAME} MATCHES "Linux") AND (${CMAKE_CXX_COMPILER_ID}
+                                                                        MATCHES "Clang")))
+    set_target_properties(${TARGETNAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
   endif()
 endmacro()
 

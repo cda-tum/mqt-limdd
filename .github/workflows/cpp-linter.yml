@@ -35,16 +35,13 @@ jobs:
           fi
           echo "CC=clang-${{ env.clang-version }}" >> $GITHUB_ENV
           echo "CXX=clang++-${{ env.clang-version }}" >> $GITHUB_ENV
-      - name: Install OpenCV
-        run: |
-          sudo apt-get install --no-install-recommends libopencv-dev
       - name: Generate compilation database
         run: |
           echo $CC
           echo $CXX
           $CC --version
           $CXX --version
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBINDINGS=ON -DBUILD_DDSIM_TESTS=ON
+          cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBINDINGS=ON -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       - name: Run cpp-linter
         uses: cpp-linter/cpp-linter-action@v2
         id: linter

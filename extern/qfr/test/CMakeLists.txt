@@ -15,8 +15,7 @@ if(NOT TARGET gtest OR NOT TARGET gmock)
     gtest_disable_pthreads
     gtest_force_shared_crt
     gtest_hide_internal_symbols)
-  set_target_properties(gtest gtest_main gmock gmock_main PROPERTIES FOLDER
-                                                                     extern)
+  set_target_properties(gtest gtest_main gmock gmock_main PROPERTIES FOLDER extern)
   if(BINDINGS AND NOT WIN32)
     # adjust visibility settings for building Python bindings
     target_compile_options(gtest PUBLIC -fvisibility=hidden)
@@ -40,21 +39,17 @@ add_custom_command(
     ${CMAKE_COMMAND} -E create_symlink
     $<TARGET_FILE_DIR:${PROJECT_NAME}_example>/${PROJECT_NAME}_example
     ${CMAKE_BINARY_DIR}/${PROJECT_NAME}_example
-  COMMAND
-    ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/circuits/
-    $<TARGET_FILE_DIR:${PROJECT_NAME}_example>/circuits
-  COMMAND
-    ${CMAKE_COMMAND} -E create_symlink
-    $<TARGET_FILE_DIR:${PROJECT_NAME}_example>/circuits
-    ${CMAKE_BINARY_DIR}/circuits
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/circuits/
+          $<TARGET_FILE_DIR:${PROJECT_NAME}_example>/circuits
+  COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_DIR:${PROJECT_NAME}_example>/circuits
+          ${CMAKE_BINARY_DIR}/circuits
   COMMENT "Copying circuits and creating symlinks for ${PROJECT_NAME}_example"
   VERBATIM)
 
 macro(package_add_test TESTNAME)
-  # create an exectuable in which the tests will be stored
+  # create an executable in which the tests will be stored
   add_executable(${TESTNAME} ${ARGN})
-  # link the Google test infrastructure and a default main fuction to the test
-  # executable.
+  # link the Google test infrastructure and a default main function to the test executable.
   target_link_libraries(${TESTNAME} PRIVATE ${PROJECT_NAME} gmock gtest_main)
   # discover tests
   gtest_discover_tests(
@@ -90,15 +85,11 @@ add_custom_command(
   TARGET ${PROJECT_NAME}_test
   POST_BUILD
   COMMAND
-    ${CMAKE_COMMAND} -E create_symlink
-    $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/${PROJECT_NAME}_test
+    ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/${PROJECT_NAME}_test
     ${CMAKE_BINARY_DIR}/${PROJECT_NAME}_test
-  COMMAND
-    ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/circuits
-    $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/circuits
-  COMMAND
-    ${CMAKE_COMMAND} -E create_symlink
-    $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/circuits
-    ${CMAKE_BINARY_DIR}/circuits
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/circuits
+          $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/circuits
+  COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/circuits
+          ${CMAKE_BINARY_DIR}/circuits
   COMMENT "Copying circuits and creating symlinks for ${PROJECT_NAME}_test"
   VERBATIM)

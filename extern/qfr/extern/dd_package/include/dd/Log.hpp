@@ -8,7 +8,11 @@
 #ifndef INCLUDE_DD_LOG_HPP_
 #define INCLUDE_DD_LOG_HPP_
 
+#include "Definitions.hpp"
+
+#include <complex>
 #include <iostream>
+#include <vector>
 
 namespace dd {
 
@@ -36,15 +40,34 @@ namespace dd {
         }
     };
 
-    inline std::ostream& operator<<(std::ostream& out, [[maybe_unused]] const _Log& log) {
-        return out;
-    }
-
     class Log {
     public:
         static inline _Log log  = _Log(0);
         static inline char endl = '\n';
     };
+
+    inline _Log& outputCVec(const CVec& vec) {
+        Log::log << "[";
+        for (unsigned int i = 0; i < vec.size(); i++) {
+            Log::log << vec[i] << ", ";
+        }
+        return Log::log << "]";
+    }
+
+    inline void printCVec(const std::vector<std::complex<fp>>& vec) {
+        Log::log << outputCVec(vec);
+    }
+
+    inline std::ostream& operator<<(std::ostream& out, const dd::CVec& vec) {
+        for (unsigned int i = 0; i < vec.size(); i++) {
+            out << vec[i] << ' ';
+        }
+        return out;
+    }
+
+    inline std::ostream& operator<<(std::ostream& out, [[maybe_unused]] const _Log& log) {
+        return out;
+    }
 
     //	Log Log::log(1);
     //	char Log::endl = '\n';

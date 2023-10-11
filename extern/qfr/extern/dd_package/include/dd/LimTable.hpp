@@ -1,7 +1,7 @@
 #ifndef DDPACKAGE_LIMTABLE_HPP
 #define DDPACKAGE_LIMTABLE_HPP
 
-#include "Definitions.hpp"
+#include "Complex.hpp"
 #include "PhaseUtilities.hpp"
 
 #include <array>
@@ -108,11 +108,11 @@ namespace dd {
                 // Reached terminal
                 return pauli_id;
             }
-            if (!paulis.test(2 * qubit + 1) && !paulis.test(2 * qubit)) {
+            if (!paulis.test(static_cast<std::size_t>(2 * qubit + 1)) && !paulis.test(static_cast<std::size_t>(2 * qubit))) {
                 return pauli_id;
-            } else if (!paulis.test(2 * qubit + 1) && paulis.test(2 * qubit)) {
+            } else if (!paulis.test(static_cast<std::size_t>(2 * qubit + 1)) && paulis.test(static_cast<std::size_t>(2 * qubit))) {
                 return pauli_z;
-            } else if (paulis.test(2 * qubit + 1) && !paulis.test(2 * qubit)) {
+            } else if (paulis.test(static_cast<std::size_t>(2 * qubit + 1)) && !paulis.test(static_cast<std::size_t>(2 * qubit))) {
                 return pauli_x;
             } else {
                 return pauli_y;
@@ -124,11 +124,11 @@ namespace dd {
                 // Reached terminal
                 return 'I';
             }
-            if (!paulis.test(2 * qubit + 1) && !paulis.test(2 * qubit)) {
+            if (!paulis.test(static_cast<std::size_t>(2 * qubit + 1)) && !paulis.test(static_cast<std::size_t>(2 * qubit))) {
                 return 'I';
-            } else if (!paulis.test(2 * qubit + 1) && paulis.test(2 * qubit)) {
+            } else if (!paulis.test(static_cast<std::size_t>(2 * qubit + 1)) && paulis.test(static_cast<std::size_t>(2 * qubit))) {
                 return 'Z';
-            } else if (paulis.test(2 * qubit + 1) && !paulis.test(2 * qubit)) {
+            } else if (paulis.test(static_cast<std::size_t>(2 * qubit + 1)) && !paulis.test(static_cast<std::size_t>(2 * qubit))) {
                 return 'X';
             } else {
                 return 'Y';
@@ -214,7 +214,7 @@ namespace dd {
                 return "";
             }
             if (lim == nullptr) {
-                return std::string(nQubits + 1, 'I');
+                return std::string(static_cast<std::size_t>(nQubits + 1), 'I');
             }
             if (lim == noLIM) {
                 return "(no LIM)";
@@ -342,8 +342,8 @@ namespace dd {
             char    op1, op2;
             phase_t newPhase = getPhase();
             for (unsigned int i = 0; i < NUM_QUBITS; i++) {
-                op1 = getQubit(i);
-                op2 = other.getQubit(i);
+                op1 = getQubit(static_cast<Qubit>(i));
+                op2 = other.getQubit(static_cast<Qubit>(i));
                 if (op1 == 'X' && op2 == 'Y') // XY =  iZ
                     multiplyPhaseObjectBy(newPhase, phase_t::phase_i);
                 else if (op1 == 'X' && op2 == 'Z') // XZ = -iY
@@ -406,10 +406,10 @@ namespace dd {
             ///  this makes use of the bit-wise representation in memory of the Pauli operators
             bool op1x, op1z, op2x, op2z;
             for (Qubit i = 0; i <= nQubits; i++) {
-                op1z = paulis.test(2 * i);
-                op1x = paulis.test(2 * i + 1);
-                op2z = other.paulis.test(2 * i);
-                op2x = other.paulis.test(2 * i + 1);
+                op1z = paulis.test(static_cast<std::size_t>(2 * i));
+                op1x = paulis.test(static_cast<std::size_t>(2 * i + 1));
+                op2z = other.paulis.test(static_cast<std::size_t>(2 * i));
+                op2x = other.paulis.test(static_cast<std::size_t>(2 * i + 1));
                 if (op1x && !op1z && op2x && op2z)
                     multiplyPhaseObjectBy(newPhase, phase_t::phase_i);
                 else if (op1x && op1z && !op2x && op2z) // YZ =  iX
@@ -495,7 +495,7 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2 * target + 1);
+            paulis.flip(static_cast<std::size_t>(2 * target + 1));
         }
 
         void multiplyByY(Qubit target) {
@@ -509,8 +509,8 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2 * target);
-            paulis.flip(2 * target + 1);
+            paulis.flip(static_cast<std::size_t>(2 * target));
+            paulis.flip(static_cast<std::size_t>(2 * target + 1));
         }
 
         void multiplyByZ(Qubit target) {
@@ -524,7 +524,7 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2 * target);
+            paulis.flip(static_cast<std::size_t>(2 * target));
         }
 
         void leftMultiplyByX(Qubit target) {
@@ -538,7 +538,7 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2 * target + 1);
+            paulis.flip(static_cast<std::size_t>(2 * target + 1));
         }
 
         void leftMultiplyByY(Qubit target) {
@@ -552,8 +552,8 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2 * target);
-            paulis.flip(2 * target + 1);
+            paulis.flip(static_cast<std::size_t>(2 * target));
+            paulis.flip(static_cast<std::size_t>(2 * target + 1));
         }
 
         void leftMultiplyByZ(Qubit target) {
@@ -567,7 +567,7 @@ namespace dd {
                     break;
                 default: break;
             }
-            paulis.flip(2 * target);
+            paulis.flip(static_cast<std::size_t>(2 * target));
         }
 
         // Multiply the 'target'-th operator by 'op'
@@ -611,20 +611,20 @@ namespace dd {
             if ((int)v >= (int)NUM_QUBITS) return;
             switch (op) {
                 case pauli_op::pauli_id:
-                    paulis.set(2 * v, 0);
-                    paulis.set(2 * v + 1, 0);
+                    paulis.set(static_cast<std::size_t>(2 * v), 0);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 0);
                     break;
                 case pauli_op::pauli_x:
-                    paulis.set(2 * v, 0);
-                    paulis.set(2 * v + 1, 1);
+                    paulis.set(static_cast<std::size_t>(2 * v), 0);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 1);
                     break;
                 case pauli_op::pauli_y:
-                    paulis.set(2 * v, 1);
-                    paulis.set(2 * v + 1, 1);
+                    paulis.set(static_cast<std::size_t>(2 * v), 1);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 1);
                     break;
                 case pauli_op::pauli_z:
-                    paulis.set(2 * v, 1);
-                    paulis.set(2 * v + 1, 0);
+                    paulis.set(static_cast<std::size_t>(2 * v), 1);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 0);
                     break;
                 default: break;
             }
@@ -1046,7 +1046,7 @@ namespace dd {
 
         Entry* lookup_str(const std::string pauliString) {
             // different name from lookup because 0 can apparently be seen as a
-            // string (and therefor overloading lookup on input type is an issue)
+            // string (and therefore overloading lookup on input type is an issue)
             // TODO: maybe find a way to overload lookup() cleanly?
             PauliBitSet bitSet = LimEntry<NUM_QUBITS>::bitsetFromString(pauliString);
             return lookup(bitSet);

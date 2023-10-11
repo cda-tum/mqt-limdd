@@ -3,8 +3,7 @@ if(NOT TARGET gtest OR NOT TARGET gmock)
   set(gtest_force_shared_crt
       ON
       CACHE BOOL "" FORCE)
-  add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest"
-                   "extern/googletest" EXCLUDE_FROM_ALL)
+  add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest" EXCLUDE_FROM_ALL)
   mark_as_advanced(
     BUILD_GMOCK
     BUILD_GTEST
@@ -15,8 +14,7 @@ if(NOT TARGET gtest OR NOT TARGET gmock)
     gtest_disable_pthreads
     gtest_force_shared_crt
     gtest_hide_internal_symbols)
-  set_target_properties(gtest gtest_main gmock gmock_main PROPERTIES FOLDER
-                                                                     extern)
+  set_target_properties(gtest gtest_main gmock gmock_main PROPERTIES FOLDER extern)
   if(BINDINGS)
     # adjust visibility settings for building Python bindings
     target_compile_options(gtest PUBLIC -fvisibility=hidden)
@@ -36,10 +34,8 @@ enable_lto(${PROJECT_NAME}_example)
 macro(package_add_test TESTNAME)
   # create an executable in which the tests will be stored
   add_executable(${TESTNAME} ${ARGN})
-  # link the Google test infrastructure and a default main function to the test
-  # executable.
-  target_link_libraries(${TESTNAME} PRIVATE ${PROJECT_NAME} gtest_main
-                                            gmock_main)
+  # link the Google test infrastructure and a default main function to the test executable.
+  target_link_libraries(${TESTNAME} PRIVATE ${PROJECT_NAME} gtest_main gmock_main)
   # discover tests
   gtest_discover_tests(
     ${TESTNAME}
@@ -56,8 +52,7 @@ endmacro()
 # add unit tests
 package_add_test(
   ${PROJECT_NAME}_test
-  # ${CMAKE_CURRENT_SOURCE_DIR}/test_complex.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/test_lim.cpp
+  # ${CMAKE_CURRENT_SOURCE_DIR}/test_complex.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test_lim.cpp
   # ${CMAKE_CURRENT_SOURCE_DIR}/test_package.cpp)
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simple_circuit.cpp)
 
@@ -76,8 +71,7 @@ package_add_test(${PROJECT_NAME}_singleCircuitTest
 package_add_test(${PROJECT_NAME}_cliffordCircuitsTiny
                  ${CMAKE_CURRENT_SOURCE_DIR}/tinyCliffordCircuits.cpp)
 
-package_add_test(${PROJECT_NAME}_tinyCircuits
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tinyCircuits.cpp)
+package_add_test(${PROJECT_NAME}_tinyCircuits ${CMAKE_CURRENT_SOURCE_DIR}/tinyCircuits.cpp)
 
 package_add_test(
   ${PROJECT_NAME}_comprehensiveTest
@@ -88,20 +82,17 @@ package_add_test(
   ${CMAKE_CURRENT_SOURCE_DIR}/cliffordCircuits-3q-20q.cpp)
 
 package_add_test(
-  ${PROJECT_NAME}_profile
-  ${CMAKE_CURRENT_SOURCE_DIR}/hardCircuitsBenchmark-3q-15q.cpp
+  ${PROJECT_NAME}_profile ${CMAKE_CURRENT_SOURCE_DIR}/hardCircuitsBenchmark-3q-15q.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cliffordCircuitsBenchmark-3q-25q.cpp)
 
 add_custom_command(
   TARGET ${PROJECT_NAME}_test
   POST_BUILD
   COMMAND
-    ${CMAKE_COMMAND} -E create_symlink
-    $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/${PROJECT_NAME}_test
+    ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/${PROJECT_NAME}_test
     ${CMAKE_BINARY_DIR}/${PROJECT_NAME}_test
   COMMENT "Creating symlink for ${PROJECT_NAME}_test"
   VERBATIM)
 
 # include dd_example in test suite
-add_test(NAME ${PROJECT_NAME}_example
-         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_example)
+add_test(NAME ${PROJECT_NAME}_example COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_example)

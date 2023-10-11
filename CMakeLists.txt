@@ -16,21 +16,18 @@ if(DEFINED ENV{DEPLOY})
   set(DEPLOY
       $ENV{DEPLOY}
       CACHE BOOL "Use deployment configuration from environment" FORCE)
-  message(
-    STATUS "Setting deployment configuration to '${DEPLOY}' from environment")
+  message(STATUS "Setting deployment configuration to '${DEPLOY}' from environment")
 endif()
 
 set(default_build_type "Release")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(
-    STATUS
-      "Setting build type to '${default_build_type}' as none was specified.")
+  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE
       "${default_build_type}"
       CACHE STRING "Choose the type of build." FORCE)
   # Set the possible values of build type for cmake-gui
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-                                               "MinSizeRel" "RelWithDebInfo")
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel"
+                                               "RelWithDebInfo")
 endif()
 
 macro(check_submodule_present MODULENAME)
@@ -45,8 +42,7 @@ endmacro()
 check_submodule_present(qfr)
 check_submodule_present(cxxopts)
 
-option(BUILD_DDSIM_TESTS "Also build tests and benchmarks for DDSIM project"
-       OFF)
+option(BUILD_DDSIM_TESTS "Also build tests and benchmarks for DDSIM project" OFF)
 if(BUILD_DDSIM_TESTS)
 
   enable_testing()
