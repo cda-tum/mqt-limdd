@@ -10,7 +10,6 @@
 #include "LimTable.hpp"
 #include "Log.hpp"
 #include "Node.hpp"
-#include "Package.hpp"
 #include "PauliUtilities.hpp"
 #include "QuantumGate.hpp"
 
