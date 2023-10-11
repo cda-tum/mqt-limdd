@@ -1,7 +1,7 @@
 #ifndef DDPACKAGE_LIMTABLE_HPP
 #define DDPACKAGE_LIMTABLE_HPP
 
-#include "Definitions.hpp"
+#include "Complex.hpp"
 #include "PhaseUtilities.hpp"
 
 #include <array>
