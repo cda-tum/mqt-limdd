@@ -229,7 +229,7 @@ namespace dd {
             //            std::cout << "[normalize] step 2/5: norm " << norm << " magMag " << magMax << " commonFactor " << commonFactor << "\n";
 
             auto  r   = e;
-            auto& max = r.p->e[argMax];
+            auto& max = r.p->e[static_cast<std::size_t>(argMax)];
             if (cached && !max.w.exactlyOne()) { // TODO LV: I don't understand; if max.w is exactly one, then r.w will be looked up in the Complex Numbers Table, even when `cached=true`. Why? The user expects that, if cached=true, then r.w is a cached value, no?
                 //Log::log << "[normalizeQMDD] NOT looking up r.w in Complex Numbers Table. cached = " << cached << ", max.w.exactlyOne() = " << max.w.exactlyOne() << "\n";
                 r.w = max.w;
@@ -253,7 +253,7 @@ namespace dd {
             //            std::cout << "[normalize] step 4/5 edge is " << r;
 
             const auto argMin = (argMax + 1) % 2;
-            auto&      min    = r.p->e[argMin];
+            auto&      min    = r.p->e[static_cast<std::size_t>(argMin)];
             if (cached) {
                 cn.returnToCache(min.w);
                 ComplexNumbers::div(min.w, min.w, r.w);
@@ -1479,8 +1479,8 @@ namespace dd {
                 if (threshold < p0) {
                     cur = e0;
                 } else {
-                    result[cur.p->v] = '1';
-                    cur              = e1;
+                    result[static_cast<std::size_t>(cur.p->v)] = '1';
+                    cur                                        = e1;
                 }
             }
 
@@ -1491,7 +1491,7 @@ namespace dd {
                 std::array<vEdge, 2> edges{};
 
                 for (Qubit p = 0; p < numberOfQubits; p++) {
-                    if (result[p] == '0') {
+                    if (result[static_cast<std::size_t>(p)] == '0') {
                         edges[0] = e;
                         edges[1] = vEdge::zero;
                     } else {
@@ -3136,7 +3136,7 @@ namespace dd {
                 //Log::log << "[CPauli #" << callIndex << ", n=" << (int)y.p->v << "] applying Pauli " << (char)gate.gateType << " to qubit " << (int)gate.target << " from control qubit " << (int)gate.control.qubit << " with type " << (int)gate.control.type << ".\n";
                 CliffordGate pauliGate(gate.gateType, Control::noControl(), gate.target);
                 e[(int)gate.control.type]     = applySpecificPauliGate(y.p->e[(int)gate.control.type], pauliGate);
-                e[1 ^ (int)gate.control.type] = y.p->e[1 ^ (int)gate.control.type];
+                e[1 ^ (int)gate.control.type] = y.p->e[static_cast<std::size_t>(1 ^ (int)gate.control.type)];
                 //Log::log << "[CPauli #" << callIndex << "] e[0] = " << outputCVec(getVector(e[0])) << "\n";
                 //Log::log << "[CPauli #" << callIndex << "] e[1] = " << outputCVec(getVector(e[1])) << "\n";
             } else if (gate.target == y.p->v) { ///  this qubit is the target, and the control qubit is below (has lower index); this case is slightly trickier
@@ -3507,7 +3507,7 @@ namespace dd {
                 throw std::runtime_error("Expected terminal node in trace.");
             }
 
-            if (eliminate[v]) {
+            if (eliminate[static_cast<std::size_t>(v)]) {
                 auto elims = alreadyEliminated + 1;
                 auto r     = mEdge::zero;
 
@@ -3537,7 +3537,7 @@ namespace dd {
 
                 return r;
             } else {
-                auto                     adjustedV = static_cast<Qubit>(a.p->v - (std::count(eliminate.begin(), eliminate.end(), true) - alreadyEliminated));
+                auto                     adjustedV = static_cast<Qubit>(a.p->v - (static_cast<std::size_t>(std::count(eliminate.begin(), eliminate.end(), true)) - alreadyEliminated));
                 std::array<mEdge, NEDGE> edge{};
                 std::transform(a.p->e.cbegin(),
                                a.p->e.cend(),
@@ -3645,7 +3645,7 @@ namespace dd {
             }
 
             auto e = makeDDNode(leastSignificantQubit, std::array{mEdge::one, mEdge::zero, mEdge::zero, mEdge::one});
-            for (std::size_t k = leastSignificantQubit + 1; k <= std::make_unsigned_t<Qubit>(mostSignificantQubit); k++) {
+            for (auto k = static_cast<std::size_t>(leastSignificantQubit + 1); k <= std::make_unsigned_t<Qubit>(mostSignificantQubit); k++) {
                 e = makeDDNode(static_cast<Qubit>(k), std::array{e, mEdge::zero, mEdge::zero, e});
             }
             if (leastSignificantQubit == 0)
@@ -3858,7 +3858,7 @@ namespace dd {
             f = makeDDNode(f.p->v, edges);
 
             // something to reduce for this qubit
-            if (f.p->v >= 0 && ancillary[f.p->v]) {
+            if (f.p->v >= 0 && ancillary[static_cast<std::size_t>(f.p->v)]) {
                 if (regular) {
                     if (f.p->e[1].w != Complex::zero || f.p->e[3].w != Complex::zero) {
                         f = makeDDNode(f.p->v, std::array{f.p->e[0], mEdge::zero, f.p->e[2], mEdge::zero});
@@ -3902,7 +3902,7 @@ namespace dd {
             f = makeDDNode(f.p->v, edges);
 
             // something to reduce for this qubit
-            if (f.p->v >= 0 && garbage[f.p->v]) {
+            if (f.p->v >= 0 && garbage[static_cast<std::size_t>(f.p->v)]) {
                 if (f.p->e[1].w != Complex::zero) {
                     vEdge g{};
                     if (f.p->e[0].w == Complex::zero && f.p->e[1].w != Complex::zero) {
@@ -3952,7 +3952,7 @@ namespace dd {
             f = makeDDNode(f.p->v, edges);
 
             // something to reduce for this qubit
-            if (f.p->v >= 0 && garbage[f.p->v]) {
+            if (f.p->v >= 0 && garbage[static_cast<std::size_t>(f.p->v)]) {
                 if (regular) {
                     if (f.p->e[2].w != Complex::zero || f.p->e[3].w != Complex::zero) {
                         mEdge g{};
@@ -4135,10 +4135,10 @@ namespace dd {
         }
 
         [[nodiscard]] std::string intToString(unsigned long long targetNumber, char value, dd::Qubit size) const {
-            std::string path(size, '0');
+            std::string path(static_cast<std::size_t>(size), '0');
             for (auto i = 1; i <= size; i++) {
                 if (targetNumber % 2) {
-                    path[size - i] = value;
+                    path[static_cast<std::size_t>(size - i)] = value;
                 }
                 targetNumber = targetNumber >> 1u;
             }
@@ -4403,7 +4403,7 @@ namespace dd {
         //            return vectorsApproximatelyEqual(phi1, phi2);
         //        }
 
-        void printMatrix(const dEdge& e) {
+        void printMatrix([[maybe_unused]] const dEdge& e) {
             return;
         }
 

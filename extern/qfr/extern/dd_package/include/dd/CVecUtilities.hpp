@@ -27,8 +27,8 @@ namespace dd {
     }
 
     inline CVec addVectors(const CVec a, const CVec b) {
-        unsigned int N = a.size();
-        CVec         c(N, {0.0, 0.0});
+        const auto N = a.size();
+        CVec       c(N, {0.0, 0.0});
         for (unsigned int i = 0; i < N; i++) {
             c[i] = a[i] + b[i];
         }
@@ -36,8 +36,8 @@ namespace dd {
     }
 
     inline CVec multiplyMatrixVector(const CMat mat, const CVec x) {
-        unsigned int N = std::max(mat.size(), x.size());
-        CVec         y(N, {0.0, 0.0});
+        const auto N = std::max(mat.size(), x.size());
+        CVec       y(N, {0.0, 0.0});
         if (mat.size() != x.size()) {
             return y;
         }

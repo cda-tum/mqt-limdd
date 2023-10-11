@@ -995,8 +995,8 @@ namespace dd {
         LimBitset<NUM_QUBITS, 2 * NUM_QUBITS> a_bitset(a);
         a_bitset = GramSchmidtFastSorted(GH_Id_CEF, a_bitset, nQubits);
         std::bitset<NUM_QUBITS> decomposition_G, decomposition_H; // these bitsets are initialized to 00...0, according to the C++ reference
-        bitsetCopySegment(decomposition_G, a_bitset.bits, 0, 0, G.size());
-        bitsetCopySegment(decomposition_H, a_bitset.bits, 0, G.size(), G.size() + H.size());
+        bitsetCopySegment(decomposition_G, a_bitset.bits, 0, 0, static_cast<unsigned>(G.size()));
+        bitsetCopySegment(decomposition_H, a_bitset.bits, 0, static_cast<unsigned>(G.size()), static_cast<unsigned>(G.size() + H.size()));
         LimEntry<NUM_QUBITS> a_G = getProductOfElements(G, decomposition_G, nQubits);
         //        Log::log << "[coset intersection P] got first product. Computing second product.\n"; Log::log.flush();
         LimEntry<NUM_QUBITS> a_H     = getProductOfElements(H, decomposition_H, nQubits);
