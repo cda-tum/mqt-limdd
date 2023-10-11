@@ -989,10 +989,8 @@ namespace dd {
                 //toColumnEchelonFormModuloPhase(GH_Id);
                 //pruneZeroColumnsModuloPhase(GH_Id);
                 //std::sort(GH_Id.begin(), GH_Id.end(), LimBitset<NUM_QUBITS, 2*NUM_QUBITS>::greaterValue);
-
-                std::bitset<NUM_QUBITS>
-                                              decomposition; // decomposition of 'a'
-        LimBitset<NUM_QUBITS, 2 * NUM_QUBITS> a_bitset(a);
+                LimBitset<NUM_QUBITS, 2 * NUM_QUBITS>
+                        a_bitset(a);
         a_bitset = GramSchmidtFastSorted(GH_Id_CEF, a_bitset, nQubits);
         std::bitset<NUM_QUBITS> decomposition_G, decomposition_H; // these bitsets are initialized to 00...0, according to the C++ reference
         bitsetCopySegment(decomposition_G, a_bitset.bits, 0, 0, static_cast<unsigned>(G.size()));

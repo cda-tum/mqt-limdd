@@ -611,20 +611,20 @@ namespace dd {
             if ((int)v >= (int)NUM_QUBITS) return;
             switch (op) {
                 case pauli_op::pauli_id:
-                    paulis.set(static_cast<std::size_t>(2 * v, 0));
-                    paulis.set(static_cast<std::size_t>(2 * v + 1, 0));
+                    paulis.set(static_cast<std::size_t>(2 * v), 0);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 0);
                     break;
                 case pauli_op::pauli_x:
-                    paulis.set(static_cast<std::size_t>(2 * v, 0));
-                    paulis.set(static_cast<std::size_t>(2 * v + 1, 1));
+                    paulis.set(static_cast<std::size_t>(2 * v), 0);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 1);
                     break;
                 case pauli_op::pauli_y:
-                    paulis.set(static_cast<std::size_t>(2 * v, 1));
-                    paulis.set(static_cast<std::size_t>(2 * v + 1, 1));
+                    paulis.set(static_cast<std::size_t>(2 * v), 1);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 1);
                     break;
                 case pauli_op::pauli_z:
-                    paulis.set(static_cast<std::size_t>(2 * v, 1));
-                    paulis.set(static_cast<std::size_t>(2 * v + 1, 0));
+                    paulis.set(static_cast<std::size_t>(2 * v), 1);
+                    paulis.set(static_cast<std::size_t>(2 * v + 1), 0);
                     break;
                 default: break;
             }

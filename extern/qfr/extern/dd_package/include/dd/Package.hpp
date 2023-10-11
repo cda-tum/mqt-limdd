@@ -3537,7 +3537,7 @@ namespace dd {
 
                 return r;
             } else {
-                auto                     adjustedV = static_cast<Qubit>(a.p->v - (static_cast<std::size_t>(std::count(eliminate.begin(), eliminate.end(), true)) - alreadyEliminated));
+                auto                     adjustedV = static_cast<Qubit>(a.p->v - (static_cast<Qubit>(std::count(eliminate.begin(), eliminate.end(), true)) - alreadyEliminated));
                 std::array<mEdge, NEDGE> edge{};
                 std::transform(a.p->e.cbegin(),
                                a.p->e.cend(),
