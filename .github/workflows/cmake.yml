@@ -83,7 +83,7 @@ jobs:
         run: cmake --build "${{github.workspace}}/build" --config Debug
       - name: Test
         working-directory: ${{github.workspace}}/build/test
-        run: ctest --build-config Debug --output-on-failure --repeat until-pass:3 --timeout 300 --tests-regex "LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
+        run: ctest --build-config Debug --output-on-failure --repeat until-pass:3 --timeout 300 --tests-regex "CircuitSimTest.*|LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
