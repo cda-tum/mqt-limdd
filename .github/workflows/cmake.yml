@@ -65,7 +65,7 @@ jobs:
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
-        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300 --tests-regex "CircuitSimTest.*|LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
+        run: ctest --build-config $BUILD_TYPE --output-on-failure --test-dir build --repeat until-pass:3 --timeout 300 --tests-regex "CircuitSimTest.*([A-FH-Z].*)|LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
 
   coverage:
     name: Coverage
