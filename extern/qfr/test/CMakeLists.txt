@@ -1,6 +1,6 @@
 if(NOT TARGET gtest OR NOT TARGET gmock)
   # Prevent overriding the parent project's compiler/linker settings on Windows
-  set(gtest_force_shared_crt
+  set(gtest_force_shared_crt # cmake-lint: disable=C0103
       ON
       CACHE BOOL "" FORCE)
   add_subdirectory("${PROJECT_SOURCE_DIR}/extern/dd_package/extern/googletest"
@@ -46,7 +46,8 @@ add_custom_command(
   COMMENT "Copying circuits and creating symlinks for ${PROJECT_NAME}_example"
   VERBATIM)
 
-macro(package_add_test TESTNAME)
+# Add tests
+macro(package_add_test TESTNAME) # cmake-lint: disable=C0103
   # create an executable in which the tests will be stored
   add_executable(${TESTNAME} ${ARGN})
   # link the Google test infrastructure and a default main function to the test executable.
