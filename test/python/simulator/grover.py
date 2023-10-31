@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from qiskit import BasicAer
 from qiskit.algorithms import AmplificationProblem, Grover
 from qiskit.circuit.library import PhaseOracle
@@ -15,7 +17,7 @@ p cnf 3 5
 1 -2 -3 0
 -1 2 3 0
 """
-with open("dimacs_file.txt", "w") as fd:
+with Path("dimacs_file.txt").open("w") as fd:
     fd.write(input_3sat_instance)
 
 print("pyddsim")

@@ -2,9 +2,20 @@ from __future__ import annotations
 
 import datetime
 import time
-from test.python.generate_benchmarks import *
+from pathlib import Path
+from test.python.generate_benchmarks import (
+    ghz,
+    graph_state,
+    grover,
+    qft,
+    qft_entangled,
+    qpe_exact,
+    qpe_inexact,
+    shor,
+    w_state,
+)
 
-from qiskit import transpile
+from qiskit import QuantumCircuit, transpile
 
 from mqt import ddsim
 from mqt.ddsim.pathqasmsimulator import PathQasmSimulator, get_simulation_path
@@ -22,7 +33,7 @@ def execute_circuit(
     run_results = result_dict["results"][0]
 
     # print resulting csv string
-    with open("results_comparison.csv", "a+") as file:
+    with Path("results_comparison.csv").open("a+") as file:
         file.write(
             ";{};{};{};{};{}\n".format(qc.name, qc.num_qubits, mode, run_results["time_setup"], run_results["time_sim"])
         )
@@ -72,7 +83,7 @@ def execute_verification(
     run_results = {"time_setup": setup_time - start_time, "time_sim": end_time - setup_time}
 
     # print resulting csv string
-    with open("results_verification.csv", "a+") as file:
+    with Path("results_comparison.csv").open("a+") as file:
         file.write(
             ";{};{};{};{};{};{}\n".format(
                 qc.name, qc.num_qubits, qc.size(), mode, run_results["time_setup"], run_results["time_sim"]
@@ -100,7 +111,7 @@ def execute_verification_all(qc, backend, basis_gates, shots, include_cotengra, 
 
 
 if __name__ == "__main__":
-    with open("results_verification.csv", "a+") as file:
+    with Path("results_comparison.csv").open("a+") as file:
         file.write(
             datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S") + ";name;nqubits;ngates;mode;time_setup;time_sim\n"
         )

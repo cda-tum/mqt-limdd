@@ -94,10 +94,10 @@ def w_state(n: int, include_measurements: bool = True):
         qc.ry(theta, q[j])
 
     qc.x(q[-1])
-    for l in range(1, n):
-        f_gate(qc, q, n - l, n - l - 1, n, l)
-    for l in reversed(range(1, n)):
-        qc.cx(l - 1, l)
+    for i in range(1, n):
+        f_gate(qc, q, n - i, n - i - 1, n, i)
+    for i in reversed(range(1, n)):
+        qc.cx(i - 1, i)
 
     if include_measurements:
         measure(qc, q, c)

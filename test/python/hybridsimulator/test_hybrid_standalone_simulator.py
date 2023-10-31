@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from qiskit import *
+from qiskit import QuantumCircuit, QuantumRegister
 
 from mqt import ddsim
 

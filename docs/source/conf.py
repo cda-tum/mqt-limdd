@@ -4,8 +4,8 @@ from importlib.metadata import version
 
 # -- Project information -----------------------------------------------------
 project = "DDSIM"
-copyright = "2022, Stefan Hillmich"
-author = "Stefan Hillmich"
+project_copyright = "2023, Chair for Design Automation, Technical University of Munich"
+author = "Stefan Hillmich, Lieuwe Vinkhuijzen, Thomas Grurl, Sebastiaan Brand"
 
 # The full version, including alpha/beta/rc tags
 release = version("mqt.ddsim")

@@ -111,7 +111,7 @@ include = ["*.py", "*.pyi", "**/pyproject.toml", "*.ipynb"]
 select = [
     "E", "F", "W", # flake8
     "A",           # flake8-builtins
-    "ARG",         # flake8-unused-arguments
+#    "ARG",         # flake8-unused-arguments
 #    "ANN",         # flake8-annotations
     "ASYNC",       # flake8-async
     "B",  "B904",  # flake8-bugbear
@@ -123,14 +123,14 @@ select = [
     "I",           # isort
     "ICN",         # flake8-import-conventions
     "ISC",         # flake8-implicit-str-concat
-    "N",           # flake8-naming
+#    "N",           # flake8-naming
     "NPY",         # numpy
     "PERF",        # perflint
     "PGH",         # pygrep-hooks
     "PIE",         # flake8-pie
     "PL",          # pylint
     "PT",          # flake8-pytest-style
-    "PTH",         # flake8-use-pathlib
+#    "PTH",         # flake8-use-pathlib
     "PYI",         # flake8-pyi
     "Q",           # flake8-quotes
     "RET",         # flake8-return
@@ -150,6 +150,8 @@ extend-ignore = [
     "ANN102",  # Missing type annotation for cls in classmethod
     "E501",    # Line too long (Black is enough)
     "PLR",     # Design related pylint codes
+    "PT009",   # Use a regular `assert` instead of unittest-style `assertAlmostEqual`
+    "SIM116",  # Use a dictionary instead of consecutive `if` statements
 ]
 flake8-unused-arguments.ignore-variadic-names = true
 isort.required-imports = ["from __future__ import annotations"]
