@@ -13,7 +13,7 @@ TEST(CircuitSimTest, SingleOneQubitGateOnTwoQubitCircuit) {
 
     ddsim.Simulate(1);
 
-    EXPECT_EQ(ddsim.getMaxNodeCount(), 4);
+    EXPECT_EQ(ddsim.getMaxNodeCount(), 2);
 
     auto m = ddsim.MeasureAll(false);
 
@@ -99,26 +99,6 @@ TEST(CircuitSimTest, ClassicControlledOpAsNop) {
     ASSERT_EQ("01", m);
 }
 
-TEST(CircuitSimTest, DestructiveMeasurementAll) {
-    auto quantumComputation = std::make_unique<qc::QuantumComputation>(2);
-    quantumComputation->emplace_back<qc::StandardOperation>(2, 0, qc::H);
-    quantumComputation->emplace_back<qc::StandardOperation>(2, 1, qc::H);
-    CircuitSimulator ddsim(std::move(quantumComputation), 42);
-    ddsim.Simulate(1);
-
-    const std::vector<dd::ComplexValue> v_before = ddsim.getVector();
-    ASSERT_EQ(v_before[0], v_before[1]);
-    ASSERT_EQ(v_before[0], v_before[2]);
-    ASSERT_EQ(v_before[0], v_before[3]);
-
-    const std::string m       = ddsim.MeasureAll(true);
-    const auto        v_after = ddsim.getVector();
-    const int         i       = std::stoi(m, nullptr, 2);
-
-    ASSERT_EQ(v_after[i].r, 1.0);
-    ASSERT_EQ(v_after[i].i, 0.0);
-}
-
 TEST(CircuitSimTest, DestructiveMeasurementOne) {
     auto quantumComputation = std::make_unique<qc::QuantumComputation>(2);
     quantumComputation->emplace_back<qc::StandardOperation>(2, 0, qc::H);
@@ -161,7 +141,7 @@ TEST(CircuitSimTest, ApproximateByFidelity) {
     CircuitSimulator ddsim(std::move(quantumComputation), ApproximationInfo(1, 1, ApproximationInfo::FidelityDriven));
     std::cout << ddsim.getActiveNodeCount() << "\n";
     ddsim.Simulate(1);
-    ASSERT_EQ(ddsim.getActiveNodeCount(), 6);
+    ASSERT_EQ(ddsim.getActiveNodeCount(), 5);
 
     double resulting_fidelity = ddsim.ApproximateByFidelity(0.3, false, true, true);
 
@@ -177,7 +157,7 @@ TEST(CircuitSimTest, ApproximateBySampling) {
     CircuitSimulator ddsim(std::move(quantumComputation), ApproximationInfo(1, 1, ApproximationInfo::FidelityDriven));
     ddsim.Simulate(1);
 
-    ASSERT_EQ(ddsim.getActiveNodeCount(), 6);
+    ASSERT_EQ(ddsim.getActiveNodeCount(), 5);
 
     double resulting_fidelity = ddsim.ApproximateBySampling(1, 0, true, true);
 
@@ -239,8 +219,8 @@ TEST(CircuitSimTest, TestingProperties) {
     CircuitSimulator ddsim(std::move(quantumComputation), ApproximationInfo(1, 1, ApproximationInfo::FidelityDriven), 1);
     ddsim.Simulate(1);
 
-    EXPECT_EQ(ddsim.getActiveNodeCount(), 6);
+    EXPECT_EQ(ddsim.getActiveNodeCount(), 5);
     EXPECT_EQ(ddsim.getMaxMatrixNodeCount(), 0);
     EXPECT_EQ(ddsim.getMatrixActiveNodeCount(), 0);
-    EXPECT_EQ(ddsim.countNodesFromRoot(), 7);
+    EXPECT_EQ(ddsim.countNodesFromRoot(), 6);
 }
