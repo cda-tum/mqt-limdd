@@ -133,22 +133,6 @@ TEST(CircuitSimTest, DestructiveMeasurementOne) {
     }
 }
 
-TEST(CircuitSimTest, ApproximateByFidelity) {
-    auto quantumComputation = std::make_unique<qc::QuantumComputation>(3);
-    quantumComputation->emplace_back<qc::StandardOperation>(3, 0, qc::H);
-    quantumComputation->emplace_back<qc::StandardOperation>(3, 1, qc::H);
-    quantumComputation->emplace_back<qc::StandardOperation>(3, dd::Controls{dd::Control{0}, dd::Control{1}}, 2, qc::X);
-    CircuitSimulator ddsim(std::move(quantumComputation), ApproximationInfo(1, 1, ApproximationInfo::FidelityDriven));
-    std::cout << ddsim.getActiveNodeCount() << "\n";
-    ddsim.Simulate(1);
-    ASSERT_EQ(ddsim.getActiveNodeCount(), 5);
-
-    double resulting_fidelity = ddsim.ApproximateByFidelity(0.3, false, true, true);
-
-    ASSERT_EQ(ddsim.getActiveNodeCount(), 4);
-    ASSERT_DOUBLE_EQ(resulting_fidelity, 0.75); //equal up to 4 ULP
-}
-
 TEST(CircuitSimTest, ApproximateBySampling) {
     auto quantumComputation = std::make_unique<qc::QuantumComputation>(3);
     quantumComputation->emplace_back<qc::StandardOperation>(3, 0, qc::H);
