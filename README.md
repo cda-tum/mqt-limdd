@@ -1,6 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 ![C++ Workflow](https://github.com/cda-tum/mqt-limdd/actions/workflows/cmake.yml/badge.svg)
-[![codecov](https://codecov.io/gh/cda-tum/mqt-limdd/graph/badge.svg?token=yqgfNf8YWU)](https://codecov.io/gh/cda-tum/mqt-limdd)
 
 # MQT LIMDD - A quantum circuit simulator based on decision diagrams written in C++
 
