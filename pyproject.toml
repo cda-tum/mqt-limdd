@@ -13,13 +13,13 @@ description = "A quantum simulator based on LIMDDs written in C++"
 readme = "README.md"
 authors = [
     { name = "Stefan Hillmich", email = "stefan.hillmich@scch.at"},
-    { name = "Lukas Burgholzer", email = "lukas.burgholzer@tum.de"}
+    { name = "Lieuwe Vinkhuijzen", email = "l.t.vinkhuijzen@liacs.leidenuniv.nl"}
 ]
 keywords = ["MQT", "quantum computing", "design automation", "quantum circuit simulation", "simulation"]
 license = { file = "LICENSE" }
 
 classifiers=[
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -53,7 +53,7 @@ tests = [
     "pytest>=7"
 ]
 coverage = [
-    "mqt.ddsim[tests]",
+    "mqt.limdd[tests]",
     "pytest-cov"
 ]
 docs = [
@@ -69,13 +69,12 @@ docs = [
     "breathe",
     "qiskit-terra[visualization]",
 ]
-dev = ["mqt.ddsim[tnflow, coverage, docs]"]
+dev = ["mqt.limdd[tnflow, coverage, docs]"]
 
 [project.urls]
-Homepage = "https://github.com/cda-tum/mqt-ddsim"
-Documentation = "https://mqt.readthedocs.io/projects/ddsim"
-"Bug Tracker" = "https://github.com/cda-tum/mqt-ddsim/issues"
-Discussions = "https://github.com/cda-tum/mqt-ddsim/discussions"
+Homepage = "https://github.com/cda-tum/mqt-limdd"
+"Bug Tracker" = "https://github.com/cda-tum/mqt-limdd/issues"
+Discussions = "https://github.com/cda-tum/mqt-limdd/discussions"
 Research = "https://www.cda.cit.tum.de/research/quantum_simulation/"
 
 [tool.setuptools.packages.find]
@@ -183,7 +182,7 @@ log_cli_level = "info"
 testpaths = ["test/python"]
 
 [tool.coverage]
-run.source = ["mqt.ddsim"]
+run.source = ["mqt.limdd"]
 report.show_missing = true
 report.skip_empty = true
 report.precision = 1
