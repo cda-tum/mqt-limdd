@@ -370,11 +370,11 @@ namespace dd {
         // Here we demand that 'weight' and 'weightInv' are retrieved with ComplexTable.getTemporary(..),
         // since they will be assigned values but will not be looked up in the ComplexTable
         std::size_t highLabelPauliCallCounter = 0;
-        void highLabelPauli(vNode* u, vNode* v, LimEntry<>* vLabel, Complex& lowWeight, Complex& highWeight, LimEntry<>& newHighLabel) {
+        void        highLabelPauli(vNode* u, vNode* v, LimEntry<>* vLabel, Complex& lowWeight, Complex& highWeight, LimEntry<>& newHighLabel) {
             //Log::log << "[highLabelPauli] low: " << lowWeight << " * I; high: " << highWeight << " * " << *vLabel << '\n';
             //LimEntry<>* newHighLabel;
             highLabelPauliCallCounter++;
-            if (highLabelPauliCallCounter == 64){
+            if (highLabelPauliCallCounter == 64) {
                 printf("The Bug happens now\n");
             }
 
@@ -398,7 +398,7 @@ namespace dd {
                     } else if (CTEntry::val(highWeight.i) < 0 and CTEntry::val(highWeight.r) <= 0) {
                         /// Case 2: (highWeight is in the "South West" quadrant of the complex plane)
                         ///   We multiply the top qubit with Pauli Z. After this multiplication, the high weight w becomes -w; this is the only effect
-                        highWeight.multiplyByMinusOne(true);   // Apply Z gate
+                        highWeight.multiplyByMinusOne(true); // Apply Z gate
                     } else if (CTEntry::val(highWeight.i) >= 0 and CTEntry::val(highWeight.r) < 0) {
                         /// Case 3: (highWeight is in the "North West" quadrant of the complex plane)
                         ///   We multiply the top qubit with Pauli X and Z. After this multiplication, the high weight w becomes -w*
@@ -408,8 +408,7 @@ namespace dd {
                         /// Case 4: (highWeight is in the "North East" quadrant of the complex plane)
                         ///   No action is needed, since the high edge weight is already as desired.
                     }
-                }
-                else {
+                } else {
                     //Log::log << "[high label] case |lowWeight| != |highWeight|\n";
                     if (himag2 > lomag2) {
                         //Log::log << "[highLabelPauli] high is larger than low.\n";
@@ -3042,8 +3041,7 @@ namespace dd {
         ///   since Proj(x) Z = Z Proj(x), and Proj(b) X = X Proj(1-b)
         vEdge applyHadamardGate2(const Edge<mNode>& x, const vEdge y, Qubit hadamardTarget) {
             applyHadamardCallCount++;
-            startProfile(applyHadamard)
-            if (y.isTerminal()) return y;
+            startProfile(applyHadamard) if (y.isTerminal()) return y;
             //Log::log << "[Hadamard, " << (int)y.p->v << " qubits] Start. target is " << (int) hadamardTarget << ". y = " << y << "\n";
             LimEntry<> pushedLim(y.l);
             conjugateWithHadamard(pushedLim, hadamardTarget);

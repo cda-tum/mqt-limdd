@@ -26,4 +26,4 @@ TEST(LimddSimTest, SimpleCircuit) {
     c.addGate(dd::Hmat, 2);
 
     simulateCircuitQMDDvsLIMDDGateByGate(c);
-    }
+}

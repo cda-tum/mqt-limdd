@@ -200,9 +200,9 @@ namespace dd {
         //   // Now z = a - ib, i.e., z is the conjugate transpose of its previous value
         void toConjugateTranspose(bool cached = true) {
             if (cached) {
-            i->value = i->value * -1;
+                i->value = i->value * -1;
             } else {
-            i = CTEntry::flipPointerSign(i);
+                i = CTEntry::flipPointerSign(i);
             }
         }
 
