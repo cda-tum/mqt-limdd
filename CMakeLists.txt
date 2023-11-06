@@ -19,7 +19,7 @@ if(DEFINED ENV{DEPLOY})
   message(STATUS "Setting deployment configuration to '${DEPLOY}' from environment")
 endif()
 
-set(default_build_type "Release")
+set(default_build_type "Release") # cmake-lint: disable=C0103
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE
@@ -30,12 +30,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
                                                "RelWithDebInfo")
 endif()
 
-macro(check_submodule_present MODULENAME)
+# Check if submodule is present
+macro(check_submodule_present MODULENAME) # cmake-lint: disable=C0103
   if(NOT EXISTS "${PROJECT_SOURCE_DIR}/extern/${MODULENAME}/CMakeLists.txt")
-    message(
-      FATAL_ERROR
-        "${MODULENAME} submodule not cloned properly. Please run `git submodule update --init --recursive` from the main project directory"
-    )
+    message(FATAL_ERROR "${MODULENAME} submodule not cloned properly.
+        Please run `git submodule update --init --recursive` from the main project directory")
   endif()
 endmacro()
 

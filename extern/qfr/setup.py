@@ -5,6 +5,7 @@ import platform
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 from setuptools import Extension, find_namespace_packages, setup
 from setuptools.command.build_ext import build_ext
@@ -25,13 +26,13 @@ class CMakeBuild(build_ext):
             raise RuntimeError(
                 "CMake must be installed to build the following extensions: "
                 + ", ".join(e.name for e in self.extensions)
-            )
+            ) from None
 
         for ext in self.extensions:
             self.build_extension(ext)
 
     def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.namespace + ext.name)))
+        extdir = Path(self.get_ext_fullpath(ext.namespace + ext.name)).parent.resolve()
         # required for auto-detection of auxiliary "native" libs
         if not extdir.endswith(os.path.sep):
             extdir += os.path.sep
@@ -75,7 +76,7 @@ class CMakeBuild(build_ext):
 
 
 README_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
-with open(README_PATH) as readme_file:
+with Path(README_PATH).open() as readme_file:
     README = readme_file.read()
 
 setup(

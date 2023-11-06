@@ -2,18 +2,19 @@ from __future__ import annotations
 
 import random
 import re
+from pathlib import Path
 
 
 def getGateName(gateId):
     if gateId == 0:
         return "x"
-    elif gateId == 1:
+    if gateId == 1:
         return "y"
-    elif gateId == 2:
+    if gateId == 2:
         return "z"
-    elif gateId == 3:
+    if gateId == 3:
         return "s"
-    elif gateId == 4:
+    if gateId == 4:
         return "h"
     return "??"
 
@@ -52,24 +53,17 @@ def writeRandomCliffordCircuit(file_out, nQubits, nGates, quantumRegister):
 
 
 def prependRandomStabilizerCircuit(filename_in, filename_out):
-    f = open(filename_in)
-    try:
-        out = open(filename_out, "w")
-    except OSError:
-        print("Could not open file for writing.")
-        exit()
-
-    beginning = re.compile("OPENQASM|include|qreg|creg")
-    qreg = re.compile(r"qreg .*\[")
-    qregName = "None"
-    num = re.compile(r"\d+")
-    nQubits = 0
-    for line in f:
-        r = beginning.search(line)
-        if r is None:
-            lastLine = line
-            break
-        else:
+    with Path(filename_in).open() as f, Path(filename_out).open("w") as out:
+        beginning = re.compile("OPENQASM|include|qreg|creg")
+        qreg = re.compile(r"qreg .*\[")
+        qregName = "None"
+        num = re.compile(r"\d+")
+        nQubits = 0
+        for line in f:
+            r = beginning.search(line)
+            if r is None:
+                lastLine = line
+                break
             # print("Beginning of file : " + line, end="")
             qregs = qreg.findall(line)
             # print(qregs)
@@ -83,20 +77,18 @@ def prependRandomStabilizerCircuit(filename_in, filename_out):
                     print("Name of quantum register: " + str(qregName))
             out.write(line)
 
-    out.write("\n// Start of random Clifford circuit\n")
+        out.write("\n// Start of random Clifford circuit\n")
 
-    # out.close()
-    # print("WRITING WITH NQUBITS = " + str(nQubits))
-    nGates = 10 * int(nQubits)
-    # subprocess.run(["./generateCliffordCircuit", str(nQubits), str(nGates), "0", "1", "qasm", filename_out, qregName])
+        # out.close()
+        # print("WRITING WITH NQUBITS = " + str(nQubits))
+        nGates = 10 * int(nQubits)
+        # subprocess.run(["./generateCliffordCircuit", str(nQubits), str(nGates), "0", "1", "qasm", filename_out, qregName])
 
-    writeRandomCliffordCircuit(out, nQubits, nGates, qregName)
+        writeRandomCliffordCircuit(out, nQubits, nGates, qregName)
 
-    # out = open(filename_out, "a")
-    out.write("// End of random CliffordCircuit\n\n")
-    # print("Done with calling generateCliffordCircuit")
-    out.write(lastLine)
-    for line in f:
-        out.write(line)
-    f.close()
-    out.close()
+        # out = open(filename_out, "a")
+        out.write("// End of random CliffordCircuit\n\n")
+        # print("Done with calling generateCliffordCircuit")
+        out.write(lastLine)
+        for line in f:
+            out.write(line)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 import sys
+from pathlib import Path
 
 # TODO swap the qubit indices, so that the largest registers are the control qubits, and the lower-index qubits are the targets
 # TODO add option to generate graph state rather than Clifford circuit
@@ -14,16 +15,16 @@ def totalNumberQubits(n):
     return 3 * n + 2
 
 
-def getIndex(n, id):
-    return str(totalNumberQubits(n) - 1 - id)
+def getIndex(n, idx):
+    return str(totalNumberQubits(n) - 1 - idx)
 
 
-def getAncillaRegisterIndex(n, id):
-    return getIndex(n, n + id)
+def getAncillaRegisterIndex(n, idx):
+    return getIndex(n, n + idx)
 
 
-def getTargetRegisterIndex(n, id):
-    return getIndex(n, n + n + 1 + id)
+def getTargetRegisterIndex(n, idx):
+    return getIndex(n, n + n + 1 + idx)
 
 
 def writePrologue(file_out, n):
@@ -174,13 +175,13 @@ def writeHammingControls(file_out, n):
 def getGateName(gateId):
     if gateId == 0:
         return "x"
-    elif gateId == 1:
+    if gateId == 1:
         return "y"
-    elif gateId == 2:
+    if gateId == 2:
         return "z"
-    elif gateId == 3:
+    if gateId == 3:
         return "s"
-    elif gateId == 4:
+    if gateId == 4:
         return "h"
     return "??"
 
@@ -234,11 +235,10 @@ def writeRandomCliffordCircuit(file_out, n, nGates):
 
 
 def getRandomHammingWeightControlledCliffordCircuit(n, nGates):
-    file_out = open("HammingWeightControlledCircuits/hwc_" + str(n) + ".qasm", "w")
-    writePrologue(file_out, n)
-    writeHammingControls(file_out, n)
-    writeRandomCliffordCircuit(file_out, n, nGates)
-    file_out.close()
+    with Path("HammingWeightControlledCircuits/hwc_" + str(n) + ".qasm").open("w") as file_out:
+        writePrologue(file_out, n)
+        writeHammingControls(file_out, n)
+        writeRandomCliffordCircuit(file_out, n, nGates)
 
 
 if len(sys.argv) < 2:
