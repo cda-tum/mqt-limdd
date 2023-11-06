@@ -369,9 +369,15 @@ namespace dd {
         // Sets the
         // Here we demand that 'weight' and 'weightInv' are retrieved with ComplexTable.getTemporary(..),
         // since they will be assigned values but will not be looked up in the ComplexTable
-        void highLabelPauli(vNode* u, vNode* v, LimEntry<>* vLabel, Complex& lowWeight, Complex& highWeight, LimEntry<>& newHighLabel) {
+        std::size_t highLabelPauliCallCounter = 0;
+        void        highLabelPauli(vNode* u, vNode* v, LimEntry<>* vLabel, Complex& lowWeight, Complex& highWeight, LimEntry<>& newHighLabel) {
             //Log::log << "[highLabelPauli] low: " << lowWeight << " * I; high: " << highWeight << " * " << *vLabel << '\n';
             //LimEntry<>* newHighLabel;
+            highLabelPauliCallCounter++;
+            if (highLabelPauliCallCounter == 64) {
+                printf("The Bug happens now\n");
+            }
+
             if (u == v) {
                 newHighLabel = GramSchmidtFastSorted(u->limVector, vLabel, u->v);
                 highWeight.multiplyByPhase(newHighLabel.getPhase());
@@ -380,36 +386,61 @@ namespace dd {
 
                 fp lomag2 = ComplexNumbers::mag2(lowWeight);
                 fp himag2 = ComplexNumbers::mag2(highWeight);
-                if (himag2 > lomag2) {
-                    //Log::log << "[highLabelPauli] high is larger than low.\n";
-                    // Swap low, high
-                    Complex hiTemp = cn.getCached(lowWeight);
-                    Complex loTemp = cn.getCached(highWeight);
-                    vEdge   lo{u, hiTemp, nullptr};
-                    vEdge   hi{u, loTemp, nullptr};
-                    //Log::log << "[highLabelPauli] before normalize: loTemp = " << loTemp << "; hiTemp = " << hiTemp << '\n';
-                    // Normalize low, high
-                    vNode tempNode{{lo, hi}, nullptr, {}, 0, (Qubit)(u->v + 1)};
-                    vEdge tempEdge{&tempNode, Complex::one, nullptr};
-                    tempEdge = normalize(tempEdge, false);
-                    //Log::log << "[highlabelPauli] after  normalize: loTemp = " << loTemp << "; hiTemp = " << hiTemp << '\n';
-                    //Log::log << "[highlabelPauli] after  normalize: lo edge= " << tempEdge.p->e[0].w << "; hiEdge = " << tempEdge.p->e[1].w << '\n';
+                /// We distinguish two cases: (1) the case when the low and high edge weights have equal magnitude, and (2) when they don't
+                if (CTEntry::approximatelyEquals(himag2, lomag2)) {
+                    /// In case the high and low edge weights have equal magnitude, we can apply Pauli X and Z gates to the top qubit
+                    ///   in order to make sure the high weight has nonnegative real and imaginary parts.
+                    ///   To this end, we consider 4 cases:
+                    if (CTEntry::val(highWeight.i) < 0 and CTEntry::val(highWeight.r) >= 0) {
+                        /// Case 1: (highWeight is in the "South East" quadrant of the complex plane)
+                        ///   We multiply the top qubit with Pauli X. After this multiplication, the high weight becomes its conjugate transpose
+                        highWeight.toConjugateTranspose(true);
+                    } else if (CTEntry::val(highWeight.i) < 0 and CTEntry::val(highWeight.r) <= 0) {
+                        /// Case 2: (highWeight is in the "South West" quadrant of the complex plane)
+                        ///   We multiply the top qubit with Pauli Z. After this multiplication, the high weight w becomes -w; this is the only effect
+                        highWeight.multiplyByMinusOne(true); // Apply Z gate
+                    } else if (CTEntry::val(highWeight.i) >= 0 and CTEntry::val(highWeight.r) < 0) {
+                        /// Case 3: (highWeight is in the "North West" quadrant of the complex plane)
+                        ///   We multiply the top qubit with Pauli X and Z. After this multiplication, the high weight w becomes -w*
+                        highWeight.toConjugateTranspose(true);
+                        highWeight.multiplyByMinusOne(true);
+                    } else {
+                        /// Case 4: (highWeight is in the "North East" quadrant of the complex plane)
+                        ///   No action is needed, since the high edge weight is already as desired.
+                    }
+                } else {
+                    //Log::log << "[high label] case |lowWeight| != |highWeight|\n";
+                    if (himag2 > lomag2) {
+                        //Log::log << "[highLabelPauli] high is larger than low.\n";
+                        // Swap low, high
+                        Complex hiTemp = cn.getCached(lowWeight);
+                        Complex loTemp = cn.getCached(highWeight);
+                        vEdge   lo{u, hiTemp, nullptr};
+                        vEdge   hi{u, loTemp, nullptr};
+                        //Log::log << "[highLabelPauli] before normalize: loTemp = " << loTemp << "; hiTemp = " << hiTemp << '\n';
+                        // Normalize low, high
+                        vNode tempNode{{lo, hi}, nullptr, {}, 0, (Qubit)(u->v + 1)};
+                        vEdge tempEdge{&tempNode, Complex::one, nullptr};
+                        tempEdge = normalize(tempEdge, false);
+                        //Log::log << "[highlabelPauli] after  normalize: loTemp = " << loTemp << "; hiTemp = " << hiTemp << '\n';
+                        //Log::log << "[highlabelPauli] after  normalize: lo edge= " << tempEdge.p->e[0].w << "; hiEdge = " << tempEdge.p->e[1].w << '\n';
 
-                    // Now the weights are normalized
-                    //highWeight.setVal(tempEdge.p->e[0].w);
-                    //lowWeight.setVal(tempEdge.p->e[1].w);
-                    highWeight.r->value = CTEntry::val(tempEdge.p->e[0].w.r);
-                    highWeight.i->value = CTEntry::val(tempEdge.p->e[0].w.i);
-                    lowWeight.r->value  = CTEntry::val(tempEdge.p->e[1].w.r);
-                    lowWeight.i->value  = CTEntry::val(tempEdge.p->e[1].w.i);
+                        // Now the weights are normalized
+                        //highWeight.setVal(tempEdge.p->e[0].w);
+                        //lowWeight.setVal(tempEdge.p->e[1].w);
+                        highWeight.r->value = CTEntry::val(tempEdge.p->e[0].w.r);
+                        highWeight.i->value = CTEntry::val(tempEdge.p->e[0].w.i);
+                        lowWeight.r->value  = CTEntry::val(tempEdge.p->e[1].w.r);
+                        lowWeight.i->value  = CTEntry::val(tempEdge.p->e[1].w.i);
 
-                    //                		Log::log << "[highLabelPauli] (case high > low) new low = " << lowWeight << "; new high = " << highWeight << "\n";
-                    cn.returnToCache(loTemp);
-                    cn.returnToCache(hiTemp);
-                }
-                if (CTEntry::val(highWeight.r) < 0 || (CTEntry::approximatelyEquals(highWeight.r, &ComplexTable<>::zero) && CTEntry::val(highWeight.i) < 0)) {
-                    highWeight.multiplyByMinusOne(true);
-                    //Log::log << "[highLabelPauli] the high edge weight is flipped. New weight is " << highWeight << ".\n";
+                        //                		Log::log << "[highLabelPauli] (case high > low) new low = " << lowWeight << "; new high = " << highWeight << "\n";
+                        cn.returnToCache(loTemp);
+                        cn.returnToCache(hiTemp);
+                    }
+                    if (CTEntry::val(highWeight.r) < 0 || (CTEntry::approximatelyEquals(highWeight.r, &ComplexTable<>::zero) && CTEntry::val(highWeight.i) < 0)) {
+                        highWeight.multiplyByMinusOne(true);
+                        //Log::log << "[highLabelPauli] the high edge weight is flipped. New weight is " << highWeight << ".\n";
+                    }
                 }
             } else {
                 StabilizerGroupValue GH = groupConcatenateValue(u->limVector, v->limVector);
@@ -3009,6 +3040,7 @@ namespace dd {
         ///   We can do this because we exploit the algebraic property that the projection operator can be pushed through a Pauli LIM,
         ///   since Proj(x) Z = Z Proj(x), and Proj(b) X = X Proj(1-b)
         vEdge applyHadamardGate2(const Edge<mNode>& x, const vEdge y, Qubit hadamardTarget) {
+            applyHadamardCallCount++;
             startProfile(applyHadamard) if (y.isTerminal()) return y;
             //Log::log << "[Hadamard, " << (int)y.p->v << " qubits] Start. target is " << (int) hadamardTarget << ". y = " << y << "\n";
             LimEntry<> pushedLim(y.l);

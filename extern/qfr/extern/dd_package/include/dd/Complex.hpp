@@ -194,6 +194,18 @@ namespace dd {
             }
         }
 
+        // Usage:
+        // Complex z = ...;  // prepare some complex number z = a + ib
+        // z.toConjugateTranspose();
+        //   // Now z = a - ib, i.e., z is the conjugate transpose of its previous value
+        void toConjugateTranspose(bool cached = true) {
+            if (cached) {
+                i->value = i->value * -1;
+            } else {
+                i = CTEntry::flipPointerSign(i);
+            }
+        }
+
         [[nodiscard]] std::string toString(bool formatted = true, int precision = -1) const {
             return ComplexValue::toString(CTEntry::val(r), CTEntry::val(i), formatted, precision);
         }
