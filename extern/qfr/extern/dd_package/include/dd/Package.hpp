@@ -3815,7 +3815,7 @@ namespace dd {
 
             // Calculate maximum
             unsigned int maxWidth = 0;
-            for (int i = 0; i < n_qubit + 1; i++) {
+            for (unsigned int i = 0; i < n_qubit + 1; i++) {
                 //std::cout << "[Width] maxWidth" << maxWidth << std::endl;
                 //std::cout << "[Width] layerWidth " << layerWidth[i] << std::endl;
                 if (layerWidth[i] > maxWidth) {
