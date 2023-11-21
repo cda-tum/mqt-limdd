@@ -380,7 +380,7 @@ namespace dd {
             if (highLabelPauliCallCounter == 64) {
                 printf("The Bug happens now\n");
             }
-            
+
             if (u == v) {
                 //std::cout << "[highLabelPauli] u = v \n";
                 newHighLabel = GramSchmidtFastSorted(u->limVector, vLabel, u->v);
@@ -600,18 +600,18 @@ namespace dd {
             }
             Edge<vNode> result;
 
-            if (e.p->e[0].w.approximatelyZero() || e.p->e[1].w.approximatelyZero()){
+            if (e.p->e[0].w.approximatelyZero() || e.p->e[1].w.approximatelyZero()) {
                 result = normalize(e, cached);
                 //Log::log << "[normalizeLIMDDPauli] after normalize, result = " << result << '\n';
                 //Log::log << "[normalizeLIMDD] result.w = " << (void*) result.w.result << "; one(@" << (void*) Complex::one.result << ") = " << Complex::one << "\n";
                 result.l = e.l;
-    #if !NDEBUG
+#if !NDEBUG
                 cn.complexTable.checkConstantsIntegrity();
                 currentVector = getVector(result, e.p->v);
                 sanityCheckNormalize(eVecStart, currentVector, e, result);
 
                 Edge<vNode> rOld = copyEdge(result); // TODO this seems out of date
-    #endif
+#endif
                 if (result.l == nullptr) {
                     throw std::exception();
                 }
@@ -687,7 +687,7 @@ namespace dd {
                 //Log::log << "[normalizeLIMDDPauli] after normalize, result = " << result << '\n';
                 //Log::log << "[normalizeLIMDD] result.w = " << (void*) result.w.result << "; one(@" << (void*) Complex::one.result << ") = " << Complex::one << "\n";
                 result.l = e.l;
-            }//}
+            } //}
             // TODO if both children's stabilizer groups are empty, probably we can immediately return
 
             /// Case 3 ("Fork"):  both edges of e are non-isZero
@@ -773,7 +773,7 @@ namespace dd {
             //Log::log << "[normalizeLIMDD] Final root edge: " << result << '\n';
             //std::cout << "[normalizeLIMDD] Final root edge: " << result << '\n';
 
-            if (CTEntry::val(result.p->e[0].w.i) != 0 || CTEntry::val(result.p->e[0].w.r) < 0) {// != 0 && result.p->e[0].w >= 0) {
+            if (CTEntry::val(result.p->e[0].w.i) != 0 || CTEntry::val(result.p->e[0].w.r) < 0) { // != 0 && result.p->e[0].w >= 0) {
                 throw std::runtime_error("[normalizeLIMDD] ERROR weight in low-edge LIM is not real and positive.");
             }
 
@@ -1803,7 +1803,7 @@ namespace dd {
         clock_t addTime      = 0;
         template<class Node>
         Edge<Node> add2(const Edge<Node>& x, const Edge<Node>& y, const LimEntry<>& limX = {}, const LimEntry<>& limY = {}) {
-            //std::cout << "[add2] Function called \n"; 
+            //std::cout << "[add2] Function called \n";
             //std::cout << "[add2] weight of zero edge " << x.w << "\n";
             startProfile(add)
                     addCallCount++;
@@ -1886,7 +1886,7 @@ namespace dd {
                     return {r.p, weight, lf.limTable.lookup(lim)};
                 }
             }
-            
+
             Qubit w;
             if (x.isTerminal()) {
                 w = y.p->v;
@@ -2931,7 +2931,7 @@ namespace dd {
             }
             CliffordGate gate = isHadamardGate(x);
             //std::cout << "[Hadamard] Gate type is " << gate.gateType << "\n";
-            if (gate.gateType != cliffNoGate) {  //Check if gate is a Hadamard gate
+            if (gate.gateType != cliffNoGate) { //Check if gate is a Hadamard gate
                 success = true;
                 //std::cout << "[Hadamard] Call new hadamard gate. Target " << (int) gate.target << "\n";
                 return applyHadamardGate2(x, y, gate.target);
@@ -3790,7 +3790,7 @@ namespace dd {
             }
             return sum;
         }
-    
+
     public:
         template<class Edge>
         unsigned int width(const Edge& e, unsigned int n_qubit) {
@@ -3804,22 +3804,21 @@ namespace dd {
             // std::cout << "[Width] Calculated" << n_qubit << std::endl;
 
             // Go through DD and calculate with for every layer
-            unsigned int layerWidth[n_qubit+1]= { };
+            unsigned int layerWidth[n_qubit + 1] = {};
             for (const auto& node: visited) {
-                
                 int index = node->v;
                 //std::cout << "[Width] In visited set, index" << index << std::endl;
-                if (index >= 0){
+                if (index >= 0) {
                     layerWidth[index] = layerWidth[index] + 1;
                 }
             }
 
             // Calculate maximum
             unsigned int maxWidth = 0;
-            for (int i = 0; i<n_qubit+1; i++){
+            for (int i = 0; i < n_qubit + 1; i++) {
                 //std::cout << "[Width] maxWidth" << maxWidth << std::endl;
                 //std::cout << "[Width] layerWidth " << layerWidth[i] << std::endl;
-                if (layerWidth[i] > maxWidth){
+                if (layerWidth[i] > maxWidth) {
                     maxWidth = layerWidth[i];
                 }
             }

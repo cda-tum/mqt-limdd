@@ -19,7 +19,7 @@
 
 namespace nl = nlohmann;
 
-int main(int argc, char** argv) {   
+int main(int argc, char** argv) {
     cxxopts::Options options("MQT DDSIM", "for more information see https://www.cda.cit.tum.de/");
     // clang-format off
     options.add_options()
@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
                 {"distinct_results", m.size()},
                 {"seed", ddsim->getSeed()},
                 {"active_nodes", ddsim->dd->size(ddsim->rootEdge)},
-                {"dd width", ddsim->dd->width(ddsim->rootEdge,+ddsim->getNumberOfQubits())},
+                {"dd width", ddsim->dd->width(ddsim->rootEdge, +ddsim->getNumberOfQubits())},
                 {"number_of_lims", ddsim->dd->limCount(ddsim->rootEdge)},
                 {"number_of_number", ddsim->dd->numberCount(ddsim->rootEdge)},
                 {"size_of_a_single_node", sizeof(*ddsim->rootEdge.p)},
@@ -261,8 +261,8 @@ int main(int argc, char** argv) {
         std::ofstream outfile;
 
         outfile.open("width.txt", std::ios_base::app); // append instead of overwrite
-        outfile << ddsim->dd->width(ddsim->rootEdge,+ddsim->getNumberOfQubits()) << std::endl; 
-        std::cout << ddsim->dd->width(ddsim->rootEdge,+ddsim->getNumberOfQubits()) << std::endl;
+        outfile << ddsim->dd->width(ddsim->rootEdge, +ddsim->getNumberOfQubits()) << std::endl;
+        std::cout << ddsim->dd->width(ddsim->rootEdge, +ddsim->getNumberOfQubits()) << std::endl;
     }
 
     if (vm.count("print")) {
