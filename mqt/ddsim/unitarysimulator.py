@@ -1,4 +1,5 @@
 """Backend for DDSIM Unitary Simulator."""
+
 from __future__ import annotations
 
 import logging
