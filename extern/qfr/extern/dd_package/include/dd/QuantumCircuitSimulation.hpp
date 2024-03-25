@@ -73,7 +73,7 @@ inline void raceCircuitQMDDvsLIMDD(const dd::QuantumCircuit& circuit) {
     //return;
     auto qmdd          = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::QMDD_group);
     auto limddOld      = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false,
-                                                    dd::CachingStrategy::QMDDCachingStrategy);
+                                                         dd::CachingStrategy::QMDDCachingStrategy);
     auto limddClifford = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false, (dd::CachingStrategy)(dd::CachingStrategy::cliffordSpecialCaching | dd::CachingStrategy::lazyMemoizationGroupIntersect | dd::CachingStrategy::smartStabilizerGeneration | dd::CachingStrategy::localityAwareCachingDirtyTrick | dd::CachingStrategy::localityAwarePropagateReducedLim));
     auto limddLocality = std::make_unique<dd::Package<>>(circuit.n, dd::LIMDD_group::Pauli_group, false,
                                                          dd::CachingStrategy::localityAwareCachingDirtyTrick);
