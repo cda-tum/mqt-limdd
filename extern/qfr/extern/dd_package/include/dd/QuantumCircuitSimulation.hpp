@@ -241,8 +241,8 @@ inline void simulateCircuitQMDDvsLIMDDGateByGate(const dd::QuantumCircuit& circu
     //dd::export2Dot(limddState, "limdd.dot", false, true, true, false, true, false);
 
     std::mt19937_64 mt;
-    auto            qmddResult  = qmdd->measureAll(qmddState, false, mt);
-    auto            limddResult = qmdd->measureAll(limddState, false, mt);
+    auto            qmddMeasureResult  = qmdd->measureAll(qmddState, false, mt);
+    auto            limddMeasureResult = qmdd->measureAll(limddState, false, mt);
 
     for (dd::Qubit i = 0; i < (dd::Qubit)qmdd->qubits(); i++) {
         std::cout << "Testing for " << int(i) << std::endl;
