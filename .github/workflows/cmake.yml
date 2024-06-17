@@ -30,7 +30,7 @@ jobs:
       - name: Set up mold as linker
         uses: rui314/setup-mold@v1
       - name: Configure CMake
-        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBINDINGS=ON -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config $BUILD_TYPE
       - name: Test
@@ -71,6 +71,8 @@ jobs:
     name: Coverage
     needs: [build-ubuntu]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -78,15 +80,14 @@ jobs:
       - name: Set up mold as linker
         uses: rui314/setup-mold@v1
       - name: Configure CMake
-        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=1 -DCOVERAGE=ON -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON -DBINDINGS=ON
+        run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=1 -DCOVERAGE=ON -DBUILD_DDSIM_TESTS=ON -DBUILD_QFR_TESTS=ON -DBUILD_DD_PACKAGE_TESTS=ON
       - name: Build
         run: cmake --build "${{github.workspace}}/build" --config Debug
       - name: Test
         working-directory: ${{github.workspace}}/build/test
         run: ctest --build-config Debug --output-on-failure --repeat until-pass:3 --timeout 300 --tests-regex "CircuitSimTest.*|LimTest.*(tiny|simple|randomCliffordCircuit_([3-9]|1[0-5]))"
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          gcov: true
+          use_oidc: true

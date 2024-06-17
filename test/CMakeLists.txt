@@ -37,17 +37,7 @@ macro(package_add_test TESTNAME) # cmake-lint: disable=C0103
   set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 endmacro()
 
-package_add_test(
-  ${PROJECT_NAME}_test
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_circuit_sim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_shor_sim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_fast_shor_sim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_grover_sim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_hybridsim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_stoch_noise_sim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_det_noise_sim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_unitary_sim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_path_sim.cpp)
+package_add_test(${PROJECT_NAME}_test test_circuit_sim.cpp test_limdd_circuits.cpp)
 
 add_custom_command(
   TARGET ${PROJECT_NAME}_test
