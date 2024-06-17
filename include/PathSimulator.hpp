@@ -26,7 +26,7 @@ public:
             std::pair<std::size_t, std::size_t> children;
 
             explicit Step(std::size_t id, std::vector<std::size_t> operations = {}, std::size_t parent = UNKNOWN, std::pair<std::size_t, std::size_t> children = {UNKNOWN, UNKNOWN}):
-                id(id), operations(std::move(operations)), parent(parent), children(std::move(children)){};
+                id(id), operations(std::move(operations)), parent(parent), children(std::move(children)) {};
 
             static constexpr size_t UNKNOWN = std::numeric_limits<size_t>::max();
         };
@@ -66,7 +66,7 @@ public:
 
         //Add new variables here
         explicit Configuration(Mode mode = Mode::Sequential, std::size_t bracketSize = 2, std::size_t alternatingStart = 0, std::size_t seed = 0):
-            mode(mode), bracketSize(bracketSize), alternatingStart(alternatingStart), seed(seed){};
+            mode(mode), bracketSize(bracketSize), alternatingStart(alternatingStart), seed(seed) {};
 
         static Mode modeFromString(const std::string& mode) {
             if (mode == "sequential" || mode == "0") {

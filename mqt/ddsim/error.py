@@ -1,6 +1,7 @@
 """
 Exception for errors raised by DDSIM simulator.
 """
+
 from __future__ import annotations
 
 from qiskit import QiskitError
