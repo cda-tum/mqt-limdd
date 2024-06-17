@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import locale
 import os
 import platform
 import re
@@ -76,7 +77,7 @@ class CMakeBuild(build_ext):
 
 
 README_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
-with Path(README_PATH).open() as readme_file:
+with Path(README_PATH).open(encoding=locale.getpreferredencoding(False)) as readme_file:
     README = readme_file.read()
 
 setup(

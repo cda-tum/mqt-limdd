@@ -1,6 +1,5 @@
 #include "CircuitSimulator.hpp"
 #include "GroverSimulator.hpp"
-#include "HybridSchrodingerFeynmanSimulator.hpp"
 #include "ShorFastSimulator.hpp"
 #include "ShorSimulator.hpp"
 #include "Simulator.hpp"
@@ -33,9 +32,6 @@ int main(int argc, char** argv) {
         ("dump_complex", "dump edge weights in final state DD to file", cxxopts::value<std::string>())
         ("verbose", "Causes some simulators to print additional information to STDERR")
         ("simulate_file", "simulate a quantum circuit given by file (detection by the file extension)", cxxopts::value<std::string>())
-        ("simulate_file_hybrid", "simulate a quantum circuit given by file (detection by the file extension) using the hybrid Schrodinger-Feynman simulator", cxxopts::value<std::string>())
-        ("hybrid_mode", "mode used for hybrid Schrodinger-Feynman simulation (*amplitude*, dd)", cxxopts::value<std::string>())
-        ("nthreads", "#threads used for hybrid simulation", cxxopts::value<unsigned int>()->default_value("2"))
         ("simulate_qft", "simulate Quantum Fourier Transform for given number of qubits", cxxopts::value<unsigned int>())
         ("simulate_ghz", "simulate state preparation of GHZ state for given number of qubits", cxxopts::value<unsigned int>())
         ("step_fidelity", "target fidelity for each approximation run (>=1 = disable approximation)", cxxopts::value<double>()->default_value("1.0"))
@@ -60,11 +56,8 @@ int main(int argc, char** argv) {
 
     const auto seed          = vm["seed"].as<unsigned long long>();
     const auto shots         = vm["shots"].as<unsigned int>();
-    const auto nthreads      = vm["nthreads"].as<unsigned int>();
     const auto approx_steps  = vm["steps"].as<unsigned int>();
     const auto step_fidelity = vm["step_fidelity"].as<double>();
-
-    auto mode = HybridSchrodingerFeynmanSimulator<>::Mode::Amplitude;
 
     ApproximationInfo::ApproximationWhen approx_when;
     if (vm["approx_when"].as<std::string>() == "fidelity") {
@@ -84,22 +77,6 @@ int main(int argc, char** argv) {
         const std::string fname = vm["simulate_file"].as<std::string>();
         quantumComputation      = std::make_unique<qc::QuantumComputation>(fname);
         ddsim                   = std::make_unique<CircuitSimulator<>>(std::move(quantumComputation), approx_info, seed);
-    } else if (vm.count("simulate_file_hybrid")) {
-        const std::string fname = vm["simulate_file_hybrid"].as<std::string>();
-        quantumComputation      = std::make_unique<qc::QuantumComputation>(fname);
-        if (vm.count("hybrid_mode")) {
-            const std::string mname = vm["hybrid_mode"].as<std::string>();
-            if (mname == "amplitude") {
-                mode = HybridSchrodingerFeynmanSimulator<>::Mode::Amplitude;
-            } else if (mname == "dd") {
-                mode = HybridSchrodingerFeynmanSimulator<>::Mode::DD;
-            }
-        }
-        if (seed != 0) {
-            ddsim = std::make_unique<HybridSchrodingerFeynmanSimulator<>>(std::move(quantumComputation), approx_info, seed, mode, nthreads);
-        } else {
-            ddsim = std::make_unique<HybridSchrodingerFeynmanSimulator<>>(std::move(quantumComputation), mode, nthreads);
-        }
     } else if (vm.count("simulate_qft")) {
         const unsigned int n_qubits = vm["simulate_qft"].as<unsigned int>();
         quantumComputation          = std::make_unique<qc::QFT>(n_qubits);

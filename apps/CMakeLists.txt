@@ -20,12 +20,4 @@ macro(add_sim_executable APPNAME) # cmake-lint: disable=C0103
 
 endmacro()
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads)
-link_libraries(Threads::Threads)
-
 add_sim_executable(simple cxxopts::cxxopts)
-if(Threads_FOUND)
-  add_sim_executable(noise_aware cxxopts::cxxopts)
-  target_link_libraries(${PROJECT_NAME}_noise_aware PUBLIC Threads::Threads)
-endif()

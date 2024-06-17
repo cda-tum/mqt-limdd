@@ -10,8 +10,6 @@ updates:
       day: "friday"
       time: "05:00"
       timezone: "Europe/Vienna"
-    assignees:
-      - "hillmich"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -23,8 +21,6 @@ updates:
       day: "friday"
       time: "05:00"
       timezone: "Europe/Vienna"
-    assignees:
-      - "hillmich"
 
   - package-ecosystem: "pip"
     directory: "/"
@@ -33,5 +29,3 @@ updates:
       day: "friday"
       time: "05:00"
       timezone: "Europe/Vienna"
-    assignees:
-      - "hillmich"
