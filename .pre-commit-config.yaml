@@ -15,7 +15,7 @@ exclude: "cxxopts|taskflow|zx|json|pybind11|pybind11_json|googletest"
 repos:
   # Standard hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -28,15 +28,9 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
 
-  # Clean jupyter notebooks
-  - repo: https://github.com/srstevenson/nb-clean
-    rev: "3.1.0"
-    hooks:
-      - id: nb-clean
-
   # Handling unwanted unicode characters
   - repo: https://github.com/sirosen/texthooks
-    rev: 0.6.2
+    rev: 0.6.6
     hooks:
       - id: fix-ligatures
       - id: fix-smartquotes
@@ -60,39 +54,21 @@ repos:
 
   # Clang-format the C++ part of the code base automatically
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v17.0.5
+    rev: v18.1.8
     hooks:
       - id: clang-format
         types_or: [c++, c, cuda]
 
-  # Python linting using ruff
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.6
-    hooks:
-      - id: ruff
-        args: ["--fix", "--show-fixes"]
-        types_or: [python, pyi, jupyter]
-      - id: ruff-format
-        types_or: [python, pyi, jupyter]
-
-  # Also run Black on examples in the documentation
-  - repo: https://github.com/asottile/blacken-docs
-    rev: 1.16.0
-    hooks:
-      - id: blacken-docs
-        additional_dependencies:
-          - black==23.*
-
   # Format configuration files with prettier
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.1.0"
+    rev: "v4.0.0-alpha.8"
     hooks:
       - id: prettier
         types_or: [yaml, markdown, html, css, scss, javascript, json]
 
   # Check for spelling
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
         args: ["-L", "wille,linz,braket,coo,pres,testss", "--skip", "*.ipynb"]
