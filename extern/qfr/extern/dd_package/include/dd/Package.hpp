@@ -586,14 +586,14 @@ namespace dd {
 
         clock_t normalizeLIMDDTime      = 0;
         long    normalizeLIMDDCallCount = 0;
-        vEdge normalizeLIMDDPauli(const vEdge& e, bool cached) {
+        vEdge   normalizeLIMDDPauli(const vEdge& e, bool cached) {
             /*
             Not sure if this function is correct
 
             Returns an edge r satisfying |r> = |e>
             The node e.p is put in canonical form, according to Pauli-LIMDD reduction rules
             */
-            
+
             // check if the LIM on this edge is identity Pauli string
             if (e.l == nullptr) {
                 //std::cout << "[normalizeLIMDDPauli] e.l == nullptr location 1\n";
@@ -601,8 +601,8 @@ namespace dd {
             }
             //std::cout << "[normalizeLIMDD] Normalization called on edge " << e <<"\n";
             startProfile(normalizeLIMDD)
-            CVec rpVec;
-            CVec oldNodeVec;
+                    CVec rpVec;
+            CVec         oldNodeVec;
 #if !NDEBUG
             CVec vec_e0 = getVector(e.p->e[0], e.p->v);
             CVec vec_e1 = getVector(e.p->e[1], e.p->v);
@@ -693,18 +693,18 @@ namespace dd {
             // From here on both the zero edge and one edge have not weight equal to zero
 
             //Log::log << "[normalizeLIMDD] Start. case Fork on " << (signed int)(result.p->v) + 1 << " qubits. Edge is currently: " << result << '\n';
-            
+
             // check if zero and one edge need to be swapped
             // this is in case the zero edge weight is smaller than one edge weight, or, in case of equal weights, if zero node is bigger than one node
             if ((ComplexNumbers::mag2(e.p->e[0].w) + ComplexTable<>::tolerance() < ComplexNumbers::mag2(e.p->e[1].w)) || ((long long unsigned int)(e.p->e[0].p) > (long long unsigned int)(e.p->e[1].p) && CTEntry::approximatelyEquals(ComplexNumbers::mag2(e.p->e[0].w), ComplexNumbers::mag2(e.p->e[1].w)))) {
-                std::swap(e.p->e[0], e.p->e[1]);  // swap zero edge and one edge
+                std::swap(e.p->e[0], e.p->e[1]); // swap zero edge and one edge
                 result = normalize(e, cached);
                 //std::cout << "[normalizeLIMDD] SWAP CASE: result after normalize " << result << "\n";
                 //Log::log << "[normalizeLIMDDPauli] after normalize, result = " << result << '\n';
                 //Log::log << "[normalizeLIMDD] result.w = " << (void*) result.w.result << "; one(@" << (void*) Complex::one.result << ") = " << Complex::one << "\n";
                 result.l = e.l;
 
-                result.l->multiplyByX(result.p->v);  // multiply LIM by X to compensate swapping of edges
+                result.l->multiplyByX(result.p->v); // multiply LIM by X to compensate swapping of edges
             } else {
                 result = normalize(e, cached);
                 //Log::log << "[normalizeLIMDDPauli] after normalize, result = " << result << '\n';
