@@ -169,6 +169,13 @@ namespace dd {
         // Done limdd: Add LIMs for Stabilizer Groups to nodes
     public:
         vEdge normalize(const vEdge& e, bool cached) {
+            /*
+            Do not confuse with other normalize() function!
+
+            Normalize node to which the node points
+
+            Only the complex numbers are normalized, not the LIMs
+            */
             //          std::cout << "[normalize] start. Edge is currently " << e;
             auto zero = std::array{e.p->e[0].w.approximatelyZero(), e.p->e[1].w.approximatelyZero()};
 
@@ -182,6 +189,7 @@ namespace dd {
                 }
             }
 
+            // low edge label is zero
             if (zero[0]) {
                 // all equal to zero
                 if (zero[1]) {
@@ -203,6 +211,7 @@ namespace dd {
                 return r;
             }
 
+            // high edge label is zero
             if (zero[1]) {
                 auto  r = e;
                 auto& w = r.p->e[0].w;
@@ -279,6 +288,9 @@ namespace dd {
         // The edge is labeled with a LIM
         // the node e.p is canonical, according to <Z>-LIMDD reduction rules
         vEdge normalizeLIMDDZ(const vEdge& e, [[maybe_unused]] bool cached) {
+            /*
+            Not working function: this function returns the input
+            */
             return e;
             // Step 1: Make sure the weight on the LIMs is +1
             //            if (!(LimEntry<>::getPhase(e.p->e[0].l) == phase_t::phase_one &&
@@ -574,17 +586,23 @@ namespace dd {
 
         clock_t normalizeLIMDDTime      = 0;
         long    normalizeLIMDDCallCount = 0;
-        // Returns an edge r satisfying |r> = |e>
-        // the node e.p is put in canonical form, according to Pauli-LIMDD reduction rules
         vEdge normalizeLIMDDPauli(const vEdge& e, bool cached) {
+            /*
+            Not sure if this function is correct
+
+            Returns an edge r satisfying |r> = |e>
+            The node e.p is put in canonical form, according to Pauli-LIMDD reduction rules
+            */
+            
+            // check if the LIM on this edge is identity Pauli string
             if (e.l == nullptr) {
                 //std::cout << "[normalizeLIMDDPauli] e.l == nullptr location 1\n";
                 throw std::exception();
             }
             //std::cout << "[normalizeLIMDD] Normalization called on edge " << e <<"\n";
             startProfile(normalizeLIMDD)
-                    CVec rpVec;
-            CVec         oldNodeVec;
+            CVec rpVec;
+            CVec oldNodeVec;
 #if !NDEBUG
             CVec vec_e0 = getVector(e.p->e[0], e.p->v);
             CVec vec_e1 = getVector(e.p->e[1], e.p->v);
@@ -600,6 +618,7 @@ namespace dd {
             }
             Edge<vNode> result;
 
+            // check if one outgoing edge has weight zero
             if (e.p->e[0].w.approximatelyZero() || e.p->e[1].w.approximatelyZero()) {
                 result = normalize(e, cached);
                 //Log::log << "[normalizeLIMDDPauli] after normalize, result = " << result << '\n';
@@ -671,17 +690,21 @@ namespace dd {
                 }
                 throw std::runtime_error("[normalizeLIMDD] ERROR special case of zero edge not processed.");
             }
+            // From here on both the zero edge and one edge have not weight equal to zero
 
             //Log::log << "[normalizeLIMDD] Start. case Fork on " << (signed int)(result.p->v) + 1 << " qubits. Edge is currently: " << result << '\n';
+            
+            // check if zero and one edge need to be swapped
+            // this is in case the zero edge weight is smaller than one edge weight, or, in case of equal weights, if zero node is bigger than one node
             if ((ComplexNumbers::mag2(e.p->e[0].w) + ComplexTable<>::tolerance() < ComplexNumbers::mag2(e.p->e[1].w)) || ((long long unsigned int)(e.p->e[0].p) > (long long unsigned int)(e.p->e[1].p) && CTEntry::approximatelyEquals(ComplexNumbers::mag2(e.p->e[0].w), ComplexNumbers::mag2(e.p->e[1].w)))) {
-                std::swap(e.p->e[0], e.p->e[1]);
+                std::swap(e.p->e[0], e.p->e[1]);  // swap zero edge and one edge
                 result = normalize(e, cached);
                 //std::cout << "[normalizeLIMDD] SWAP CASE: result after normalize " << result << "\n";
                 //Log::log << "[normalizeLIMDDPauli] after normalize, result = " << result << '\n';
                 //Log::log << "[normalizeLIMDD] result.w = " << (void*) result.w.result << "; one(@" << (void*) Complex::one.result << ") = " << Complex::one << "\n";
                 result.l = e.l;
 
-                result.l->multiplyByX(result.p->v);
+                result.l->multiplyByX(result.p->v);  // multiply LIM by X to compensate swapping of edges
             } else {
                 result = normalize(e, cached);
                 //Log::log << "[normalizeLIMDDPauli] after normalize, result = " << result << '\n';
@@ -692,7 +715,7 @@ namespace dd {
 
             /// Case 3 ("Fork"):  both edges of e are non-isZero
             LimEntry<>* lowLim = result.p->e[0].l;
-            /// Step 1: Make a new LIM, which is the left LIM multiplied by the right LIM
+            /// Step 1: Make a new right LIM, which is the left LIM multiplied by the right LIM
             //Log::log << "[normalizeLIMDD] Step 1: Multiply low and high LIMs, result = " << result << "\n";
             LimEntry<> highLimTemp2 = LimEntry<>::multiply(result.p->e[0].l, result.p->e[1].l);
             result.p->e[1].l        = &highLimTemp2;
@@ -773,6 +796,7 @@ namespace dd {
             //Log::log << "[normalizeLIMDD] Final root edge: " << result << '\n';
             //std::cout << "[normalizeLIMDD] Final root edge: " << result << '\n';
 
+            // check that weight on zero edge is real and non-negative
             if (CTEntry::val(result.p->e[0].w.i) != 0 || CTEntry::val(result.p->e[0].w.r) < 0) { // != 0 && result.p->e[0].w >= 0) {
                 throw std::runtime_error("[normalizeLIMDD] ERROR weight in low-edge LIM is not real and positive.");
             }
@@ -876,6 +900,9 @@ namespace dd {
     public:
         template<class Node>
         Edge<Node> normalize(const Edge<Node>& e, bool cached) {
+            /*
+            Do not confuse with other normalize() function!
+            */
             if constexpr (std::is_same_v<Node, mNode> || std::is_same_v<Node, dNode>) {
                 auto argmax = -1;
 
@@ -1217,6 +1244,9 @@ namespace dd {
         template<class Node>
         Edge<Node> makeNode(Qubit var, const std::array<Edge<Node>, std::tuple_size_v<decltype(Node::e)>>& edges, bool cached = false, [[maybe_unused]] const bool generateDensityMatrix = false) {
             // TODO Limdd: add LIMs to makeDDNode
+            /*
+            Do not confuse with makeDDNode() function!
+            */
             auto&      uniqueTable = getUniqueTable<Node>();
             Edge<Node> e{uniqueTable.getNode(), Complex::one, nullptr};
             e.p->v = var;
@@ -1256,6 +1286,9 @@ namespace dd {
         // create a normalized DD node and return an edge pointing to it. The node is not recreated if it already exists.
         template<class Node>
         Edge<Node> makeDDNode(Qubit var, const std::array<Edge<Node>, std::tuple_size_v<decltype(Node::e)>>& edges, bool cached = false, [[maybe_unused]] const bool generateDensityMatrix = false) {
+            /*
+            Do not confuse with makeDDNode() function!
+            */
             auto&      uniqueTable = getUniqueTable<Node>();
             Edge<Node> e{uniqueTable.getNode(), Complex::one, nullptr};
             e.p->v = var;
@@ -1300,6 +1333,9 @@ namespace dd {
         long        makeDDNodeCallCount = 0;
         clock_t     makeDDNodeTime      = 0;
         Edge<vNode> makeDDNode(Qubit var, const std::array<Edge<vNode>, std::tuple_size_v<decltype(vNode::e)>>& edges, bool cached = false, LimEntry<>* lim = nullptr, const vEdge targetEdge = {}, const CliffordGate gate = CliffordGate::cliffordGateNone()) {
+            /*
+            Do not confuse with other MakeDDNode() function!
+            */
             //std::cout << "makeDDNode(" << var << ", ..., " << cached << ", ..)\n";
             startProfile(makeDDNode) auto& uniqueTable = getUniqueTable<vNode>();
 
