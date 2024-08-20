@@ -63,9 +63,9 @@ To build documentation, install `doxygen` and run
 ```
 doxygen doxyfile.in
 ```
-The documentation is found in `docs/html/index.html` and could be displayed by for example going to `docs/html` and spinning up a server: `python3 -m http.server`.
+The documentation is found in `docs/html/index.html` and could be displayed by for example going to `docs/html` and spinning up a server: `python3 -m http.server`, followed by opening your web browser and navigating to the web page that python returns (often something like `0.0.0.0/8000`).
 
-**Note:** we would like to also have documentation of the libraries, which is done by setting `RECURSIVE` in `doxyfile.in` to YES. However, at the moment this yields a bug.
+**Note:** we would like to also have documentation of the libraries, which is done by setting `RECURSIVE` in `doxyfile.in` to YES. However, at the moment this yields an error.
 
 ## References
 
