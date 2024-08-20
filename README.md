@@ -60,6 +60,7 @@ build/apps/ddsim_simple --shots 1000 --ps --simulate_file path/to/ghz_03.qasm
 ## Documentation
 
 To build documentation, install `doxygen` and run
+
 ```
 doxygen doxyfile.in
 ```

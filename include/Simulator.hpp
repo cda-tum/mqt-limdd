@@ -58,7 +58,7 @@ public:
         return results;
     }
 
-/**
+    /**
  * Some example note about the function `MeasureOneCollapsing` (note the double asterisk in the line above here for doxygen to pick up the documentation!)
  *
  */
