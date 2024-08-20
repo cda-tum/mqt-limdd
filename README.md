@@ -60,9 +60,11 @@ build/apps/ddsim_simple --shots 1000 --ps --simulate_file path/to/ghz_03.qasm
 ## Documentation
 
 To build documentation, install `doxygen` and run
+
 ```
 doxygen doxyfile.in
 ```
+
 The documentation is found in `docs/html/index.html` and could be displayed by for example going to `docs/html` and spinning up a server: `python3 -m http.server`.
 
 **Note:** we would like to also have documentation of the libraries, which is done by setting `RECURSIVE` in `doxyfile.in` to YES. However, at the moment this yields a bug.
