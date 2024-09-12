@@ -17,6 +17,11 @@
 #include <vector>
 
 template<class DDPackage = dd::Package<>>
+
+/**
+ * Some example documentation here about the Simulator class (note the double asterisk in the line above here for doxygen to pick up the documentation!)
+ *
+ */
 class Simulator {
 public:
     explicit Simulator(unsigned long long seed):
@@ -53,6 +58,10 @@ public:
         return results;
     }
 
+    /**
+ * Some example note about the function `MeasureOneCollapsing` (note the double asterisk in the line above here for doxygen to pick up the documentation!)
+ *
+ */
     char MeasureOneCollapsing(dd::Qubit index, bool assume_probability_normalization = true) {
         return dd->measureOneCollapsing(rootEdge, index, assume_probability_normalization, mt, epsilon);
     }

@@ -9,6 +9,15 @@
 A tool for classical quantum circuit simulation developed as part of the [_Munich Quantum Toolkit_](https://mqt.readthedocs.io) (_MQT_)[^1] by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/).
 It builds upon [MQT Core](https://github.com/cda-tum/mqt-core), which forms the backbone of the MQT.
 
+## Building
+
+```
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
+
 ## Usage
 
 The simulator comes with a stand alone executable that takes input via the command line and output their results as json object.
@@ -47,6 +56,17 @@ build/apps/ddsim_simple --shots 1000 --ps --simulate_file path/to/ghz_03.qasm
   }
 }
 ```
+
+## Documentation
+
+To build documentation, install `doxygen` and run
+
+```
+doxygen doxyfile.in
+```
+The documentation is found in `docs/html/index.html` and could be displayed by for example going to `docs/html` and spinning up a server: `python3 -m http.server`, followed by opening your web browser and navigating to the web page that python returns (often something like `0.0.0.0/8000`).
+
+**Note:** we would like to also have documentation of the libraries, which is done by setting `RECURSIVE` in `doxyfile.in` to YES. However, at the moment this yields an error.
 
 ## References
 
