@@ -24,7 +24,9 @@ int main(int argc, char** argv) {
         ("shots", "number of measurements (if the algorithm does not contain non-unitary gates, weak simulation is used)", cxxopts::value<unsigned int>()->default_value("0"))
         ("pv", "display the state vector")
         ("ps", "print simulation stats (applied gates, sim. time, and maximal size of the DD)")
+        ("pw", "print width of decision diagram")
         ("pm", "print measurement results")
+        ("print", "print limdd picture in file")
         ("pcomplex", "print additional statistics on complex numbers")
         ("dump_complex", "dump edge weights in final state DD to file", cxxopts::value<std::string>())
         ("verbose", "Causes some simulators to print additional information to STDERR")
@@ -173,6 +175,7 @@ int main(int argc, char** argv) {
                 {"distinct_results", m.size()},
                 {"seed", ddsim->getSeed()},
                 {"active_nodes", ddsim->dd->size(ddsim->rootEdge)},
+                {"dd width", ddsim->dd->width(ddsim->rootEdge, +ddsim->getNumberOfQubits())},
                 {"number_of_lims", ddsim->dd->limCount(ddsim->rootEdge)},
                 {"number_of_number", ddsim->dd->numberCount(ddsim->rootEdge)},
                 {"size_of_a_single_node", sizeof(*ddsim->rootEdge.p)},
@@ -191,6 +194,18 @@ int main(int argc, char** argv) {
         auto filename = vm["dump_complex"].as<std::string>();
         auto ostream  = std::fstream(filename, std::fstream::out);
         dd::exportEdgeWeights(ddsim->rootEdge, ostream);
+    }
+
+    if (vm.count("pw")) {
+        std::ofstream outfile;
+
+        outfile.open("width.txt", std::ios_base::app); // append instead of overwrite
+        outfile << ddsim->dd->width(ddsim->rootEdge, +ddsim->getNumberOfQubits()) << std::endl;
+        std::cout << ddsim->dd->width(ddsim->rootEdge, +ddsim->getNumberOfQubits()) << std::endl;
+    }
+
+    if (vm.count("print")) {
+        dd::export2Dot(ddsim->rootEdge, "final_limdd.dot", false, true, true, false, true, false);
     }
 
     std::cout << std::setw(2) << output_obj << std::endl;
