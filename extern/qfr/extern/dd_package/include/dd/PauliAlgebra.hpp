@@ -1116,11 +1116,11 @@ namespace dd {
             //printStabilizerGroup(stabgenset);
         } else if (low.p == high.p) { // Case 3: the node is an 'oval': the two children are nonzero and equal
             //std::cout << "[constructStabilizerGeneratorSet] Case oval; "  << node << "\n";
-            StabilizerGroup     stabLow = low.p->limVector;  // stabilizers of the low node
+            StabilizerGroup stabLow = low.p->limVector; // stabilizers of the low node
 
             // Go over all stabilizers g of the child nodes
             for (unsigned int i = 0; i < stabLow.size(); i++) {
-                stabgenset.push_back(*stabLow[i]);  // Add stabilizer    I \otimes B_high   to stabilizer generators
+                stabgenset.push_back(*stabLow[i]);         // Add stabilizer    I \otimes B_high   to stabilizer generators
                 if (!stabgenset[i].commutesWith(high.l)) { // g anti-commutes with B_high
                     // Replace stabilizer    I \otimes B_high   by    Z \otimes B_high
                     stabgenset[i].setOperator(n, 'Z');
@@ -1128,9 +1128,8 @@ namespace dd {
             }
 
             // Check whether coefficient of B_high is +1 or -1
-            if ((high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2) && (high.l->getPhase() == phase_one || high.l->getPhase() == phase_minus_one)) || 
-                (high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2_i) && (high.l->getPhase() == phase_i || high.l->getPhase() == phase_minus_i)))
-            {
+            if ((high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2) && (high.l->getPhase() == phase_one || high.l->getPhase() == phase_minus_one)) ||
+                (high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2_i) && (high.l->getPhase() == phase_i || high.l->getPhase() == phase_minus_i))) {
                 // Add stabilizer    X \otimes B_high   to stabilizer generators
                 LimEntry<> lim = *high.l;
                 lim.setOperator(n, 'X');
@@ -1138,9 +1137,8 @@ namespace dd {
                 //std::cout << "[constructStabilizerGeneratorSet] Case: plus/minus 1 \n";
             }
             // Check whether coefficient of B_high is +i or -i
-            else if ((high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2) && (high.l->getPhase() == phase_i || high.l->getPhase() == phase_minus_i)) || 
-                    (high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2_i) && (high.l->getPhase() == phase_one || high.l->getPhase() == phase_minus_one)))
-            {
+            else if ((high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2) && (high.l->getPhase() == phase_i || high.l->getPhase() == phase_minus_i)) ||
+                     (high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2_i) && (high.l->getPhase() == phase_one || high.l->getPhase() == phase_minus_one))) {
                 // Add stabilizer   -Y \otimes B_high   to stabilizer generators
                 LimEntry<> lim = *high.l;
                 lim.setOperator(n, 'Y');
@@ -1150,12 +1148,11 @@ namespace dd {
             }
             //else
             //{
-                //std::cout << "[constructStabilizerGeneratorSet] Case: no pm 1 or pm i high edge label.... \n";
+            //std::cout << "[constructStabilizerGeneratorSet] Case: no pm 1 or pm i high edge label.... \n";
             //}
 
             toColumnEchelonForm(stabgenset, n);
-        }
-        else { // Case 4: the node is a 'fork': both its children are nonzero and unequal
+        } else { // Case 4: the node is a 'fork': both its children are nonzero and unequal
             //                vEdge edgeDummy{&node, Complex::one, nullptr};
             // Gather the stabilizer groups of the two children
             //std::cout << "[constructStabilizerGeneratorSet] Case fork; "  << node << "\n";
