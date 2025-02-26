@@ -28,6 +28,11 @@ namespace dd {
         static Complex complex_i;
         static Complex minus_i;
 
+        static Complex sqrt2_2;
+        static Complex minus_sqrt2_2;
+        static Complex sqrt2_2_i;
+        static Complex minus_sqrt2_2_i;
+
         void setVal(const Complex& c) const {
             r->value = CTEntry::val(c.r);
             i->value = CTEntry::val(c.i);
@@ -280,6 +285,11 @@ namespace dd {
     inline Complex Complex::minus_one{CTEntry::getNegativePointer(&ComplexTable<>::one), &ComplexTable<>::zero};
     inline Complex Complex::complex_i{&ComplexTable<>::zero, &ComplexTable<>::one};
     inline Complex Complex::minus_i{&ComplexTable<>::zero, CTEntry::getNegativePointer(&ComplexTable<>::one)};
+
+    inline Complex Complex::sqrt2_2{&ComplexTable<>::sqrt2_2, &ComplexTable<>::zero};
+    inline Complex Complex::minus_sqrt2_2{CTEntry::getNegativePointer(&ComplexTable<>::sqrt2_2), &ComplexTable<>::zero};
+    inline Complex Complex::sqrt2_2_i{&ComplexTable<>::zero, &ComplexTable<>::sqrt2_2};
+    inline Complex Complex::minus_sqrt2_2_i{&ComplexTable<>::zero, CTEntry::getNegativePointer(&ComplexTable<>::sqrt2_2)};
 } // namespace dd
 
 namespace std {

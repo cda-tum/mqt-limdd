@@ -1114,10 +1114,48 @@ namespace dd {
             stabgenset.push_back(minusIdZ);
             //Log::log << "[stab genPauli] Added -Z. now stab gen set is:\n";
             //printStabilizerGroup(stabgenset);
-        } else { // Case 3: the node is a 'fork': both its children are nonzero
+        } else if (low.p == high.p) { // Case 3: the node is an 'oval': the two children are nonzero and equal
+            //std::cout << "[constructStabilizerGeneratorSet] Case oval; "  << node << "\n";
+            StabilizerGroup stabLow = low.p->limVector; // stabilizers of the low node
+
+            // Go over all stabilizers g of the child nodes
+            for (unsigned int i = 0; i < stabLow.size(); i++) {
+                stabgenset.push_back(*stabLow[i]);         // Add stabilizer    I \otimes B_high   to stabilizer generators
+                if (!stabgenset[i].commutesWith(high.l)) { // g anti-commutes with B_high
+                    // Replace stabilizer    I \otimes B_high   by    Z \otimes B_high
+                    stabgenset[i].setOperator(n, 'Z');
+                }
+            }
+
+            // Check whether coefficient of B_high is +1 or -1
+            if ((high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2) && (high.l->getPhase() == phase_one || high.l->getPhase() == phase_minus_one)) ||
+                (high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2_i) && (high.l->getPhase() == phase_i || high.l->getPhase() == phase_minus_i))) {
+                // Add stabilizer    X \otimes B_high   to stabilizer generators
+                LimEntry<> lim = *high.l;
+                lim.setOperator(n, 'X');
+                stabgenset.push_back(lim);
+                //std::cout << "[constructStabilizerGeneratorSet] Case: plus/minus 1 \n";
+            }
+            // Check whether coefficient of B_high is +i or -i
+            else if ((high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2) && (high.l->getPhase() == phase_i || high.l->getPhase() == phase_minus_i)) ||
+                     (high.w.approximatelyEqualsPlusMinus(Complex::sqrt2_2_i) && (high.l->getPhase() == phase_one || high.l->getPhase() == phase_minus_one))) {
+                // Add stabilizer   -Y \otimes B_high   to stabilizer generators
+                LimEntry<> lim = *high.l;
+                lim.setOperator(n, 'Y');
+                lim.setPhase(multiplyPhases(lim.getPhase(), phase_t::phase_minus_i));
+                stabgenset.push_back(lim);
+                //std::cout << "[constructStabilizerGeneratorSet] Case: plus/minus i \n";
+            }
+            //else
+            //{
+            //std::cout << "[constructStabilizerGeneratorSet] Case: no pm 1 or pm i high edge label.... \n";
+            //}
+
+            toColumnEchelonForm(stabgenset, n);
+        } else { // Case 4: the node is a 'fork': both its children are nonzero and unequal
             //                vEdge edgeDummy{&node, Complex::one, nullptr};
             // Gather the stabilizer groups of the two children
-            //Log::log << "[constructStabilizerGeneratorSet] Case fork; "  << node << "\n";
+            //std::cout << "[constructStabilizerGeneratorSet] Case fork; "  << node << "\n";
             // Step 1: Compute the intersection
             StabilizerGroup*     stabLow  = &(low.p->limVector);
             StabilizerGroup*     stabHigh = &(high.p->limVector);
@@ -1130,8 +1168,8 @@ namespace dd {
             //sanityCheckStabilizerGroup(edgeDummy, stabgenset);
             // Step 2: find out whether an element P*P' should be added, where P acts on qubit 'n'
             //Log::log << "[constructStabilizerGeneratorSet] Treating case Z...\n";
-            bool       foundElementX, foundElementY, foundElementZ;
-            LimEntry<> CIE_Z, stabX, stabY, stabZ;
+            bool       foundElementZ;
+            LimEntry<> CIE_Z, stabZ;
 
             // Next we do some memoization for getCosetIntersectionElementPauli2. This routine uses the matrix [G H; Id] in column echelon form, and uses the group G intersect H.
             //   Since this routine is called up to two times, we aim to do that work only once
@@ -1153,64 +1191,6 @@ namespace dd {
                 stabgenset.push_back(stabZ);
                 //Log::log << "[constructStabilizerGeneratorSet] found stabilizer: " << LimEntry<>::to_string(&stab, n) << '\n';
                 //sanityCheckStabilizerGroup(edgeDummy, stabgenset);
-            }
-            if (low.p == high.p) {
-                // TODO use cn.getTemporaryComplex instead of getCached - that is faster
-                Complex rho      = cn.divCached(node.e[1].w, node.e[0].w);
-                phase_t rhoPhase = rho.toPhase();
-                cn.returnToCache(rho);
-                if (rhoPhase != phase_t::no_phase) {
-                    phase_t rhoSquared = multiplyPhases(rhoPhase, rhoPhase);
-                    // Step 2.2: Find out whether a stabilizer of the form X*P' exists
-                    //Log::log << "[constructStabilizerGeneratorSet] Treating case X...\n";
-                    // TODO check if rhoSquared == -1; if so, reuse the result from above (i.e., if foundElementZ, then reuse stabZ, otherwise skip this part)
-                    if (rhoSquared == phase_t::phase_minus_one) {
-                        stabX         = CIE_Z;
-                        foundElementX = foundElementZ;
-                    } else {
-                        std::tie(stabX, foundElementX) = getCosetIntersectionElementPauli2(*stabLow, *stabHigh, high.l, high.l, rhoSquared, MemoizedData::GH_Id_CEF_memoized, MemoizedData::GintersectH_memoized, MemoizedData::memoizedGintersectH, cachingStrategy, n - 1);
-                    }
-                    if (foundElementX) {
-                        LimEntry<> X;
-                        X.setOperator(n, pauli_op::pauli_x);
-                        //Log::log << "[constructStabilizerGeneratorSet] Just set the X in " << LimEntry<>::to_string(&X) << "\n";
-                        X.multiplyBy(high.l);
-                        X.multiplyBy(stabX);
-                        X.multiplyPhaseBy(rhoPhase);
-                        //Log::log << "[constructStabilizerGeneratorSet] found stabilizer: " << LimEntry<>::to_string(&X, n) << '\n';
-                        //Log::log << "[constructStabilizerGeneratorSet] with high.l = " << LimEntry<>::to_string(high.l, n) << " coset element = " << LimEntry<>::to_string(stab, n) << ".\n";
-                        stabgenset.push_back(X);
-                        //sanityCheckStabilizerGroup(edgeDummy, stabgenset);
-                    }
-                    // Step 2.3: Find out whether a stabilizer of the form Y*P' exists
-                    //   In this step, we first check whether a Z-element or an X-element has been found. If so, we don't look for a Y-element.
-                    //   Namely, if both a Z and an X-element are stabilizers, then certainly there is a Y-stabilizer, and we do not need to look;
-                    //   moreover, if only a Z but no X element was found, then we can be sure that there is no Y-element, and we also do not need to look
-                    if (!(foundElementZ || foundElementX)) {
-                        //Log::log << "[constructStabilizerGeneratorSet] Treating case Y...\n";
-                        phase_t minusRhoSquared = multiplyPhases(rhoSquared, phase_t::phase_minus_one);
-                        // if minusRhoSquared == -1, then we may reuse the result from above - from the 'Z' case in step 2.1
-                        if (minusRhoSquared == phase_t::phase_minus_one) {
-                            stabY         = CIE_Z;
-                            foundElementY = foundElementZ;
-                        } else {
-                            std::tie(stabY, foundElementY) = getCosetIntersectionElementPauli2(*stabLow, *stabHigh, high.l, high.l, minusRhoSquared, MemoizedData::GH_Id_CEF_memoized, MemoizedData::GintersectH_memoized, MemoizedData::memoizedGintersectH, cachingStrategy, n - 1);
-                        }
-                        // TODO foundelementY is not set to true when we take the branch where minusRhoSquared == -1. Fix this? Set foundelementY = true in that case?
-                        if (foundElementY) {
-                            LimEntry<> X;
-                            X.setOperator(n, pauli_op::pauli_y);
-                            //Log::log << "[constructStabilizerGeneratorSet] Just set the Y in " << LimEntry<>::to_string(&X, n) << "\n";
-                            X.multiplyBy(high.l, n);
-                            X.multiplyBy(stabY, n);
-                            X.multiplyPhaseBy(rhoPhase);
-                            X.multiplyPhaseBy(phase_t::phase_minus_i);
-                            //Log::log << "[constructStabilizerGeneratorSet] found stabilizer: " << LimEntry<>::to_string(&X, n) << '\n';
-                            //Log::log << "[constructStabilizerGeneratorSet] with high.l = " << LimEntry<>::to_string(high.l, n) << " coset element = " << LimEntry<>::to_string(stab, n) << ".\n";
-                            stabgenset.push_back(X);
-                        }
-                    }
-                }
             }
             toColumnEchelonForm(stabgenset, n);
         }
