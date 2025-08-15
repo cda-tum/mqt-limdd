@@ -140,7 +140,6 @@ The following functions in `PauliAlgebra.hpp` currently possibly have memory lea
 - (done) in `LimWeight` class, make the LimEntry<> object a data field instead of a pointer
 - (done) refactor `struct LimWeight` so that the `LimEntry<>` object is an object, not a pointer
 - fix the memory leaks in `normalizeLIMDDPauli()`, resulting from bad management of `oldNode`.
-
   - (done) make the LIMs of `oldNode` pointers to objects on the stack
 
 - (done) carefully proofread the function `getIsomorphismPauli` and `constructStabilizerGeneratorSetPauli`, to recursively verify that
