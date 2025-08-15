@@ -65,7 +65,6 @@ It acts as an intermediate representation and provides the facilitites to
 - **Obtain intermediate representations from circuit descriptions.**
 
   Currently available file formats are:
-
   - `OpenQASM` (e.g. used by [Qiskit](https://github.com/Qiskit/qiskit))
   - `Real` (e.g. from [RevLib](http://revlib.org))
   - `GRCS` Google Random Circuit Sampling Benchmarks (see [GRCS](https://github.com/sboixo/GRCS))
@@ -90,7 +89,6 @@ It acts as an intermediate representation and provides the facilitites to
 - **Generate circuit representations for important quantum algorithms.**
 
   Currently available algorithms are:
-
   - Entanglement
 
     ```c++
@@ -147,7 +145,6 @@ It acts as an intermediate representation and provides the facilitites to
   ```
 
   Currently available file formats are:
-
   - `OpenQASM` (.qasm)
 
 ## Development
