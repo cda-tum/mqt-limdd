@@ -17,7 +17,7 @@ env:
 
 jobs:
   cpp-linter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,14 +25,7 @@ jobs:
       - name: Install clang-${{ env.clang-version }}
         run: |
           sudo apt-get --quiet update
-          wget https://apt.llvm.org/llvm.sh -O ${{ runner.temp }}/llvm_install.sh
-          chmod +x ${{ runner.temp }}/llvm_install.sh
-          if sudo ${{ runner.temp }}/llvm_install.sh ${{ env.clang-version }}; then
-            sudo apt-get install -y clang-format-${{ env.clang-version }} clang-tidy-${{ env.clang-version }} || exit 1
-          else
-            echo "Installation from script failed."
-            exit 1
-          fi
+          sudo apt-get install -y clang-${{ env.clang-version }} clang-format-${{ env.clang-version }} clang-tidy-${{ env.clang-version }}
           echo "CC=clang-${{ env.clang-version }}" >> $GITHUB_ENV
           echo "CXX=clang++-${{ env.clang-version }}" >> $GITHUB_ENV
       - name: Generate compilation database
