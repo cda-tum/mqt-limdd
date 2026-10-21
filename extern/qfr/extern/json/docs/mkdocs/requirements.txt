@@ -1,5 +1,5 @@
 Babel==2.10.1
-certifi==2021.10.8
+certifi==2026.10.19
 charset-normalizer==2.0.12
 click==8.1.2
 csscompressor==0.9.5
