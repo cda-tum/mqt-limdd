@@ -223,7 +223,7 @@ namespace qasm {
 
         std::unique_ptr<qc::Operation> Qop();
 
-        void error [[noreturn]] (const std::string& msg) const {
+        void error [[noreturn]](const std::string& msg) const {
             std::ostringstream oss{};
             oss << "l:" << t.line << " c:" << t.col << " msg: " << msg;
             throw QASMParserException(oss.str());
